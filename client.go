@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	tokenURL    = "https://oauth.vk.com/token"
-	apiURL      = "https://api.vk.com/method/%s"
-	longPollURL = "https://api.vk.com/method/messages.getLongPollServer"
+	tokenURL = "https://oauth.vk.com/token"
+	apiURL   = "https://api.vk.com/method/%s"
 )
 
 type VKClient struct {
