@@ -4,7 +4,8 @@
 go get github.com/himidori/golang-vk-api
 
 ## Example of usage
-'''go
+
+```go
 package main
 
 import (
@@ -48,5 +49,5 @@ func main() {
 		}
 	}
 }
-'''
+```
 
