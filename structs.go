@@ -91,6 +91,7 @@ type Attachment struct {
 	Video    *VideoAttachment `json:"video"`
 	Photo    *PhotoAttachment `json:"photo"`
 	Document *DocAttachment   `json:"doc"`
+	Link     *LinkAttachment  `json:"link"`
 }
 
 type AudioAttachment struct {
@@ -144,6 +145,13 @@ type DocAttachment struct {
 	URL        string `json:"url"`
 	Date       int64  `json:"date"`
 	AccessKey  string `json:"access_key"`
+}
+
+type LinkAttachment struct {
+	URL         string `json:"url"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Target      string `json:"target"`
 }
 
 type LongPollServer struct {
