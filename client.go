@@ -188,7 +188,7 @@ func (client *VKClient) GetWallPosts(ownerID int, domain string, offset int, cou
 		v.Add("owner_id", strconv.Itoa(ownerID))
 	}
 	if domain != "" {
-		v.Add("domain", (domain))
+		v.Add("domain", domain)
 	}
 	if offset != 0 {
 		v.Add("offset", strconv.Itoa(offset))
