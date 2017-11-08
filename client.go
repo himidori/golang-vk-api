@@ -181,6 +181,40 @@ func (client *VKClient) GetMessages(offset int, count int, timeOffset int, filte
 	return messages, nil
 }
 
+func (client *VKClient) GetWallPosts(ownerID int, domain string, offset int, count int, filter string) ([]WallPost, error) {
+	v := url.Values{}
+
+	if ownerID != 0 {
+		v.Add("owner_id", strconv.Itoa(ownerID))
+	}
+	if domain != "" {
+		v.Add("domain", (domain))
+	}
+	if offset != 0 {
+		v.Add("offset", strconv.Itoa(offset))
+	}
+	if count != 0 {
+		v.Add("count", strconv.Itoa(count))
+	}
+	if filter != "" {
+		v.Add("filter", filter)
+	}
+
+	resp, err := client.makeRequest("wall.get", v)
+	if err != nil {
+		return []WallPost{}, err
+	}
+
+	var posts []WallPost
+	clearedString := deleteFirstKey(string(resp.Response))
+	err = json.Unmarshal([]byte(clearedString), &posts)
+	if err != nil {
+		return []WallPost{}, err
+	}
+
+	return posts, nil
+}
+
 func (client *VKClient) getLongPollServer() (LongPollServer, error) {
 	resp, err := client.makeRequest("messages.getLongPollServer", nil)
 	if err != nil {
