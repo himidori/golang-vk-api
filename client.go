@@ -79,6 +79,7 @@ func (client *VKClient) makeRequest(method string, params url.Values) (APIRespon
 	if err != nil {
 		return APIResponse{}, err
 	}
+	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -256,6 +257,8 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 			if err != nil {
 				return
 			}
+
+			defer resp.Body.Close()
 
 			body, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
