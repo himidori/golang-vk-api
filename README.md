@@ -17,9 +17,15 @@ import (
 func main() {
 	//creating new VKClient using email(phone) and password for authorization
 	client, err := vkapi.NewVKClient("xxx", "xxx")
+
 	if err != nil {
 		panic(err)
 	}
+
+    if client.Self.Error != "" {
+       log.Fatal("Auth error: " + client.Self.Error)
+    }
+
 	fmt.Printf("Successfuly authorized!\nToken:%s\nUID:%d\n", client.Self.AccessToken,
 		client.Self.UID)
 
