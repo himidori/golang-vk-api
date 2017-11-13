@@ -1,0 +1,115 @@
+package vkapi
+
+import (
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"strconv"
+)
+
+type LongPollServer struct {
+	Key    string `json:"key"`
+	Server string `json:"server"`
+	TS     int64  `json:"ts"`
+}
+
+type LongPollUpdate struct {
+	Failed  int             `json:"failed"`
+	TS      int64           `json:"ts"`
+	Updates [][]interface{} `json:"updates"`
+}
+
+type LongPollMessage struct {
+	MessageID   int
+	UserID      int
+	Date        int64
+	Title       string
+	Body        string
+	Attachments map[string]string
+}
+
+type LongPollChannel <-chan LongPollMessage
+
+func (client *VKClient) getLongPollServer() (LongPollServer, error) {
+	resp, err := client.makeRequest("messages.getLongPollServer", nil)
+	if err != nil {
+		return LongPollServer{}, err
+	}
+	var server LongPollServer
+	err = json.Unmarshal(resp.Response, &server)
+	if err != nil {
+		return LongPollServer{}, err
+	}
+
+	return server, nil
+}
+
+func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
+	ch := make(chan LongPollMessage, 10)
+	server, err := client.getLongPollServer()
+	if err != nil {
+		return ch, err
+	}
+
+	go func() {
+		for {
+			req, err := http.NewRequest("GET", "https://"+server.Server, nil)
+			if err != nil {
+				return
+			}
+
+			q := req.URL.Query()
+			q.Add("act", "a_check")
+			q.Add("key", server.Key)
+			q.Add("ts", strconv.FormatInt(server.TS, 10))
+			q.Add("wait", "25")
+			q.Add("mode", "2")
+			q.Add("version", "1")
+			req.URL.RawQuery = q.Encode()
+
+			resp, err := client.Client.Do(req)
+			if err != nil {
+				return
+			}
+
+			defer resp.Body.Close()
+
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return
+			}
+
+			var updates LongPollUpdate
+			err = json.Unmarshal(body, &updates)
+
+			switch updates.Failed {
+			case 0:
+				for _, update := range updates.Updates {
+					updateID := update[0].(float64)
+
+					switch updateID {
+					case 4: //new message
+						var message LongPollMessage
+						message.MessageID = int(update[1].(float64))
+						message.UserID = int(update[3].(float64))
+						message.Date = int64(update[4].(float64))
+						message.Title = update[5].(string)
+						message.Body = update[6].(string)
+						message.Attachments = make(map[string]string)
+
+						for k, v := range update[7].(map[string]interface{}) {
+							message.Attachments[k] = v.(string)
+						}
+
+						ch <- message
+					}
+				}
+				server.TS = updates.TS
+			case 1:
+				server.TS = updates.TS
+			}
+		}
+	}()
+
+	return ch, nil
+}
