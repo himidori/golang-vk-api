@@ -5,6 +5,18 @@ import (
 	"net/url"
 )
 
+//last seen device
+const (
+	_ = iota
+	PlatformMobile
+	PlatformIPhone
+	PlatfromIPad
+	PlatformAndroid
+	PlatformWPhone
+	PlatformWindows
+	PlatformWeb
+)
+
 type User struct {
 	UID            int       `json:"uid"`
 	FirstName      string    `json:"first_name"`

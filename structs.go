@@ -4,17 +4,6 @@ import (
 	"encoding/json"
 )
 
-const (
-	_ = iota
-	PlatformMobile
-	PlatformIPhone
-	PlatfromIPad
-	PlatformAndroid
-	PlatformWPhone
-	PlatformWindows
-	PlatformWeb
-)
-
 type APIResponse struct {
 	Response json.RawMessage `json:"response"`
 }
