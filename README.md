@@ -22,9 +22,9 @@ func main() {
 		panic(err)
 	}
 
-    	if client.Self.Error != "" {
-       		log.Fatal("Auth error: " + client.Self.Error)
-    	}
+    if client.Self.Error != "" {
+       	log.Fatal("Auth error: " + client.Self.Error)
+    }
 
 	fmt.Printf("Successfuly authorized!\nToken:%s\nUID:%d\n", client.Self.AccessToken,
 		client.Self.UID)
@@ -37,7 +37,7 @@ func main() {
 	}
 
 	//getting 100 dialogs
-	dialogs, err := client.GetDialogs(0, 100, 0, false)
+	dialogs, err := client.GetDialogs(100, nil)
 	if err != nil {
 		panic(err)
 	}
