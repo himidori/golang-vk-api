@@ -9,7 +9,7 @@ go get github.com/himidori/golang-vk-api
 package main
 
 import (
-    "log"
+    	"log"
 
 	"github.com/himidori/golang-vk-api"
 )
