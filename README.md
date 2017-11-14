@@ -22,9 +22,9 @@ func main() {
 		panic(err)
 	}
 
-    if client.Self.Error != "" {
-       	log.Fatal("Auth error: " + client.Self.Error)
-    }
+    	if client.Self.Error != "" {
+       		log.Fatal("Auth error: " + client.Self.Error)
+    	}
 
 	fmt.Printf("Successfuly authorized!\nToken:%s\nUID:%d\n", client.Self.AccessToken,
 		client.Self.UID)
