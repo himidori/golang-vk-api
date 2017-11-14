@@ -106,23 +106,13 @@ type LinkAttachment struct {
 	Target      string `json:"target"`
 }
 
-func (client *VKClient) GetDialogs(offset int, count int, startMID int, onlyUnread bool) ([]Message, error) {
-	v := url.Values{}
+func (client *VKClient) GetDialogs(count int, params url.Values) ([]Message, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+	params.Add("count", strconv.Itoa(count))
 
-	if offset != 0 {
-		v.Add("offset", strconv.Itoa(offset))
-	}
-	if count != 0 {
-		v.Add("count", strconv.Itoa(count))
-	}
-	if startMID != 0 {
-		v.Add("start_message_id", strconv.Itoa(startMID))
-	}
-	if onlyUnread {
-		v.Add("unread", "1")
-	}
-
-	resp, err := client.makeRequest("messages.getDialogs", v)
+	resp, err := client.makeRequest("messages.getDialogs", params)
 	if err != nil {
 		return []Message{}, err
 	}
@@ -136,26 +126,13 @@ func (client *VKClient) GetDialogs(offset int, count int, startMID int, onlyUnre
 	return dialogs, nil
 }
 
-func (client *VKClient) GetMessages(offset int, count int, timeOffset int, filters int, lastMID int) ([]Message, error) {
-	v := url.Values{}
+func (client *VKClient) GetMessages(count int, params url.Values) ([]Message, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+	params.Add("count", strconv.Itoa(count))
 
-	if offset != 0 {
-		v.Add("offset", strconv.Itoa(offset))
-	}
-	if count != 0 {
-		v.Add("count", strconv.Itoa(count))
-	}
-	if timeOffset != 0 {
-		v.Add("time_offset", strconv.Itoa(timeOffset))
-	}
-	if filters != 0 {
-		v.Add("filters", strconv.Itoa(filters))
-	}
-	if lastMID != 0 {
-		v.Add("last_message_id", strconv.Itoa(lastMID))
-	}
-
-	resp, err := client.makeRequest("messages.get", v)
+	resp, err := client.makeRequest("messages.get", params)
 	if err != nil {
 		return []Message{}, err
 	}

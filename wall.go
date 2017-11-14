@@ -46,26 +46,21 @@ type Repost struct {
 	UserReposted int `json:"user_reposted"`
 }
 
-func (client *VKClient) GetWallPosts(ownerID int, domain string, offset int, count int, filter string) ([]WallPost, error) {
-	v := url.Values{}
-
-	if ownerID != 0 {
-		v.Add("owner_id", strconv.Itoa(ownerID))
-	}
-	if domain != "" {
-		v.Add("domain", domain)
-	}
-	if offset != 0 {
-		v.Add("offset", strconv.Itoa(offset))
-	}
-	if count != 0 {
-		v.Add("count", strconv.Itoa(count))
-	}
-	if filter != "" {
-		v.Add("filter", filter)
+func (client *VKClient) GetWallPosts(group interface{}, count int, params url.Values) ([]WallPost, error) {
+	if params == nil {
+		params = url.Values{}
 	}
 
-	resp, err := client.makeRequest("wall.get", v)
+	params.Add("count", strconv.Itoa(count))
+
+	switch group.(type) {
+	case int:
+		params.Add("owner_id", strconv.Itoa(group.(int)))
+	case string:
+		params.Add("domain", group.(string))
+	}
+
+	resp, err := client.makeRequest("wall.get", params)
 	if err != nil {
 		return []WallPost{}, err
 	}
