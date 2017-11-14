@@ -56,10 +56,7 @@ func (client *VKClient) GetUsers(users string) ([]User, error) {
 	}
 
 	var userList []User
-	err = json.Unmarshal(resp.Response, &userList)
-	if err != nil {
-		return []User{}, err
-	}
+	json.Unmarshal(resp.Response, &userList)
 
 	return userList, nil
 }

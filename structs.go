@@ -5,7 +5,13 @@ import (
 )
 
 type APIResponse struct {
-	Response json.RawMessage `json:"response"`
+	Response      json.RawMessage `json:"response"`
+	ResponseError Error           `json:"error"`
+}
+
+type Error struct {
+	ErrorCode int    `json:"error_code"`
+	ErrorMsg  string `json:"error_msg"`
 }
 
 type Token struct {

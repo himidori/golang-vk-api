@@ -118,10 +118,7 @@ func (client *VKClient) GetDialogs(count int, params url.Values) ([]Message, err
 	}
 	var dialogs []Message
 	clearedString := deleteFirstKey(string(resp.Response))
-	err = json.Unmarshal([]byte(clearedString), &dialogs)
-	if err != nil {
-		return []Message{}, err
-	}
+	json.Unmarshal([]byte(clearedString), &dialogs)
 
 	return dialogs, nil
 }
@@ -139,10 +136,28 @@ func (client *VKClient) GetMessages(count int, params url.Values) ([]Message, er
 
 	var messages []Message
 	clearedString := deleteFirstKey(string(resp.Response))
-	err = json.Unmarshal([]byte(clearedString), &messages)
-	if err != nil {
-		return []Message{}, err
-	}
+	json.Unmarshal([]byte(clearedString), &messages)
 
 	return messages, nil
+}
+
+func (client *VKClient) SendMessage(user interface{}, message string, params url.Values) error {
+	if params == nil {
+		params = url.Values{}
+	}
+	params.Add("message", message)
+
+	switch user.(type) {
+	case int:
+		params.Add("user_id", strconv.Itoa(user.(int)))
+	case string:
+		params.Add("domain", user.(string))
+	}
+
+	_, err := client.makeRequest("messages.send", params)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

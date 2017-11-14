@@ -2,10 +2,12 @@ package vkapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -59,10 +61,12 @@ func (client *VKClient) auth(user string, password string) (Token, error) {
 	}
 
 	var token Token
-	err = json.Unmarshal(body, &token)
-	if err != nil {
-		return Token{}, err
+	json.Unmarshal(body, &token)
+
+	if token.Error != "" {
+		return Token{}, errors.New(token.Error + ": " + token.ErrorDescription)
 	}
+
 	return token, nil
 }
 
@@ -86,9 +90,10 @@ func (client *VKClient) makeRequest(method string, params url.Values) (APIRespon
 	}
 
 	var apiresp APIResponse
-	err = json.Unmarshal(body, &apiresp)
-	if err != nil {
-		return APIResponse{}, err
+	json.Unmarshal(body, &apiresp)
+
+	if apiresp.ResponseError.ErrorCode != 0 {
+		return APIResponse{}, errors.New("Error code: " + strconv.Itoa(apiresp.ResponseError.ErrorCode) + ", " + apiresp.ResponseError.ErrorMsg)
 	}
 	return apiresp, nil
 }

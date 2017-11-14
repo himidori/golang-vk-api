@@ -67,10 +67,7 @@ func (client *VKClient) GetWallPosts(group interface{}, count int, params url.Va
 
 	var posts []WallPost
 	clearedString := deleteFirstKey(string(resp.Response))
-	err = json.Unmarshal([]byte(clearedString), &posts)
-	if err != nil {
-		return []WallPost{}, err
-	}
+	json.Unmarshal([]byte(clearedString), &posts)
 
 	return posts, nil
 }
