@@ -15,9 +15,8 @@ import (
 )
 
 func main() {
-	//creating new VKClient using email(phone) and password for authorization
+	//creating a new VKClient using email(phone) and password for authorization
 	client, err := vkapi.NewVKClient("xxx", "xxx")
-
 	if err != nil {
 		log.Fatal(err)
 	}
