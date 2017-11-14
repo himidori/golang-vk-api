@@ -9,7 +9,7 @@ go get github.com/himidori/golang-vk-api
 package main
 
 import (
-	"fmt"
+    "log"
 
 	"github.com/himidori/golang-vk-api"
 )
@@ -19,12 +19,8 @@ func main() {
 	client, err := vkapi.NewVKClient("xxx", "xxx")
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-
-    	if client.Self.Error != "" {
-       		log.Fatal("Auth error: " + client.Self.Error)
-    	}
 
 	fmt.Printf("Successfuly authorized!\nToken:%s\nUID:%d\n", client.Self.AccessToken,
 		client.Self.UID)
@@ -33,19 +29,19 @@ func main() {
 	//if there's more than one id they have to be splitted with comma
 	users, err := client.GetUsers("1,15")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	//getting 100 dialogs
 	dialogs, err := client.GetDialogs(100, nil)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	//getting channel for receiving messages from a longpoll server
 	ch, err := client.ListenLongPollServer()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	//receiving messages from a longpoll server
