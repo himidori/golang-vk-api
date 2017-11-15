@@ -46,18 +46,18 @@ type Repost struct {
 	UserReposted int `json:"user_reposted"`
 }
 
-func (client *VKClient) GetWallPosts(group interface{}, count int, params url.Values) ([]WallPost, error) {
+func (client *VKClient) GetWallPosts(id interface{}, count int, params url.Values) ([]WallPost, error) {
 	if params == nil {
 		params = url.Values{}
 	}
 
 	params.Add("count", strconv.Itoa(count))
 
-	switch group.(type) {
+	switch id.(type) {
 	case int:
-		params.Add("owner_id", strconv.Itoa(group.(int)))
+		params.Add("owner_id", strconv.Itoa(id.(int)))
 	case string:
-		params.Add("domain", group.(string))
+		params.Add("domain", id.(string))
 	}
 
 	resp, err := client.makeRequest("wall.get", params)
