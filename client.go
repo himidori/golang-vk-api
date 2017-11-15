@@ -28,7 +28,7 @@ func NewVKClient(user string, password string) (*VKClient, error) {
 
 	token, err := vkclient.auth(user, password)
 	if err != nil {
-		return &VKClient{}, err
+		return nil, err
 	}
 
 	vkclient.Self = token
