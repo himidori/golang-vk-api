@@ -37,7 +37,7 @@ type User struct {
 	Status         string    `json:"activity"`
 	LastOnline     *LastSeen `json:"last_seen"`
 	Hidden         int       `json:"hidden"`
-	Relation       string    `json:"relation"`
+	Relation       int       `json:"relation"`
 }
 
 type LastSeen struct {
