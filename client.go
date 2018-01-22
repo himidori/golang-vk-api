@@ -35,6 +35,48 @@ func NewVKClient(user string, password string) (*VKClient, error) {
 	return vkclient, nil
 }
 
+func NewVKClientWithToken(token string) (*VKClient, error) {
+	vkclient := &VKClient{
+		Client: &http.Client{},
+	}
+
+	res, err := vkclient.isTokenValid(token)
+
+	if !res {
+		return nil, err
+	}
+	vkclient.Self.AccessToken = token
+
+	return vkclient, nil
+}
+
+func (client *VKClient) isTokenValid(token string) (bool, error) {
+	req, err := http.NewRequest("GET", "https://api.vk.com/method/users.get", nil)
+	if err != nil {
+		return false, err
+	}
+	q := req.URL.Query()
+	q.Add("access_token", token)
+	req.URL.RawQuery = q.Encode()
+	resp, err := client.Client.Do(req)
+	if err != nil {
+		return false, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return false, err
+	}
+	defer resp.Body.Close()
+
+	var apiresp APIResponse
+	json.Unmarshal(body, &apiresp)
+	if apiresp.ResponseError.ErrorCode != 0 {
+		return false, errors.New("auth error: " + apiresp.ResponseError.ErrorMsg)
+	}
+	return true, nil
+}
+
 func (client *VKClient) auth(user string, password string) (Token, error) {
 	req, err := http.NewRequest("GET", tokenURL, nil)
 	if err != nil {
