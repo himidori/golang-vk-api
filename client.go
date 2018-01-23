@@ -32,6 +32,18 @@ func NewVKClient(user string, password string) (*VKClient, error) {
 	}
 
 	vkclient.Self = token
+
+	me, err := vkclient.GetUsers("")
+	if err != nil {
+		return nil, err
+	}
+
+	vkclient.Self.FirstName = me[0].FirstName
+	vkclient.Self.LastName = me[0].LastName
+	vkclient.Self.PicSmall = me[0].Photo
+	vkclient.Self.PicMedium = me[0].PhotoMedium
+	vkclient.Self.PicBig = me[0].PhotoBig
+
 	return vkclient, nil
 }
 
@@ -118,7 +130,7 @@ func (client *VKClient) makeRequest(method string, params url.Values) (APIRespon
 		params = url.Values{}
 	}
 
-	params.Add("access_token", client.Self.AccessToken)
+	params.Set("access_token", client.Self.AccessToken)
 
 	resp, err := client.Client.PostForm(endpoint, params)
 	if err != nil {
