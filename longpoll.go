@@ -2,6 +2,7 @@ package vkapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -20,12 +21,14 @@ type LongPollUpdate struct {
 }
 
 type LongPollMessage struct {
-	MessageID   int
-	UserID      int
-	Date        int64
-	Title       string
-	Body        string
-	Attachments map[string]string
+	MessageType  int
+	MessageID    int
+	MessageFlags int
+	UserID       int
+	Date         int64
+	Title        string
+	Body         string
+	Attachments  map[string]string
 }
 
 type LongPollChannel <-chan LongPollMessage
@@ -90,7 +93,9 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 					switch updateID {
 					case 4: //new message
 						var message LongPollMessage
+						message.MessageType = 4
 						message.MessageID = int(update[1].(float64))
+						message.MessageFlags = int(update[2].(float64))
 						message.UserID = int(update[3].(float64))
 						message.Date = int64(update[4].(float64))
 						message.Title = update[5].(string)
@@ -102,11 +107,26 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 						}
 
 						ch <- message
+
+					case 2: //message deleted
+						var message LongPollMessage
+						message.MessageType = 2
+						message.MessageID = int(update[1].(float64))
+						message.UserID = int(update[3].(float64))
+						ch <- message
 					}
 				}
 				server.TS = updates.TS
 			case 1:
+				fmt.Println("case 1")
 				server.TS = updates.TS
+			case 2, 3:
+				fmt.Println("case 2, 3")
+				server, err = client.getLongPollServer()
+				if err != nil {
+					fmt.Println("error requesting longpoll server")
+				}
+				continue
 			}
 		}
 	}()
