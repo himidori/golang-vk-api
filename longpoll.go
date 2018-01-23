@@ -118,10 +118,8 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 				}
 				server.TS = updates.TS
 			case 1:
-				fmt.Println("case 1")
 				server.TS = updates.TS
 			case 2, 3:
-				fmt.Println("case 2, 3")
 				server, err = client.getLongPollServer()
 				if err != nil {
 					fmt.Println("error requesting longpoll server")
