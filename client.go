@@ -33,7 +33,7 @@ func NewVKClient(user string, password string) (*VKClient, error) {
 
 	vkclient.Self = token
 
-	me, err := vkclient.GetUsers("")
+	me, err := vkclient.GetUsers(strconv.Itoa(vkclient.Self.UID))
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +69,7 @@ func (client *VKClient) isTokenValid(token string) (bool, error) {
 	}
 	q := req.URL.Query()
 	q.Add("access_token", token)
+	q.Add("v", "5.71")
 	req.URL.RawQuery = q.Encode()
 	resp, err := client.Client.Do(req)
 	if err != nil {
@@ -86,6 +87,11 @@ func (client *VKClient) isTokenValid(token string) (bool, error) {
 	if apiresp.ResponseError.ErrorCode != 0 {
 		return false, errors.New("auth error: " + apiresp.ResponseError.ErrorMsg)
 	}
+
+	var user []User
+	json.Unmarshal(apiresp.Response, &user)
+	client.Self.UID = user[0].UID
+
 	return true, nil
 }
 
@@ -131,6 +137,7 @@ func (client *VKClient) makeRequest(method string, params url.Values) (APIRespon
 	}
 
 	params.Set("access_token", client.Self.AccessToken)
+	params.Set("v", "5.71")
 
 	resp, err := client.Client.PostForm(endpoint, params)
 	if err != nil {

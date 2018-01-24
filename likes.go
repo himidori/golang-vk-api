@@ -19,7 +19,19 @@ const (
 	TypeSitepage     = "sitepage"
 )
 
-func (client *VKClient) GetLikes(itemType string, ownerID int, itemID int, count int, params url.Values) (int, []int, error) {
+type Likes struct {
+	Count int        `json:"count"`
+	Users []LikeUser `json:"items"`
+}
+
+type LikeUser struct {
+	Type      string `json:"profile"`
+	ID        int    `json:"id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+}
+
+func (client *VKClient) GetLikes(itemType string, ownerID int, itemID int, count int, params url.Values) (Likes, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -28,18 +40,15 @@ func (client *VKClient) GetLikes(itemType string, ownerID int, itemID int, count
 	params.Add("count", strconv.Itoa(count))
 	params.Add("owner_id", strconv.Itoa(ownerID))
 	params.Add("item_id", strconv.Itoa(itemID))
+	params.Add("extended", "1")
 
 	resp, err := client.makeRequest("likes.getList", params)
 	if err != nil {
-		return 0, []int{}, err
+		return Likes{}, err
 	}
 
-	var data struct {
-		LikesCount int   `json:"count"`
-		IDs        []int `json:"users"`
-	}
+	var likes Likes
+	json.Unmarshal(resp.Response, &likes)
+	return likes, nil
 
-	json.Unmarshal(resp.Response, &data)
-
-	return data.LikesCount, data.IDs, nil
 }

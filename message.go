@@ -6,24 +6,41 @@ import (
 	"strconv"
 )
 
+type Dialog struct {
+	Count    int    `json:"count"`
+	Messages []Item `json:"items"`
+}
+
 type Message struct {
-	MID               int                `json:"mid"`
-	Date              int64              `json:"date"`
-	Out               int                `json:"out"`
-	UID               int                `json:"uid"`
-	ReadState         int                `json:"read_state"`
-	Title             string             `json:"title"`
-	Body              string             `json:"body"`
-	ChatID            int                `json:"chat_id"`
-	ChatActive        string             `json:"chat_active"`
-	PushSettings      *Push              `json:"push_settings"`
-	UsersCount        int                `json:"users_count"`
-	AdminID           int                `json:"admin_id"`
-	Photo50           string             `json:"photo_50"`
-	Photo100          string             `json:"photo_100"`
-	Photo200          string             `json:"photo_200"`
-	ForwardedMessages []ForwardedMessage `json:"fwd_messages"`
-	Attachments       []Attachment       `json:"attachments"`
+	Count    int             `json:"count"`
+	Messages []DialogMessage `json:"items"`
+}
+
+type Item struct {
+	Message *DialogMessage `json:"message"`
+	InRead  int            `json:"in_read"`
+	OutRead int            `json:"out_read"`
+}
+
+type DialogMessage struct {
+	MID               int                 `json:"id"`
+	Date              int64               `json:"date"`
+	Out               int                 `json:"out"`
+	UID               int                 `json:"user_id"`
+	ReadState         int                 `json:"read_state"`
+	Title             string              `json:"title"`
+	Body              string              `json:"body"`
+	RandomID          int                 `json:"random_id"`
+	ChatID            int                 `json:"chat_id"`
+	ChatActive        string              `json:"chat_active"`
+	PushSettings      *Push               `json:"push_settings"`
+	UsersCount        int                 `json:"users_count"`
+	AdminID           int                 `json:"admin_id"`
+	Photo50           string              `json:"photo_50"`
+	Photo100          string              `json:"photo_100"`
+	Photo200          string              `json:"photo_200"`
+	ForwardedMessages []ForwardedMessage  `json:"fwd_messages"`
+	Attachments       []MessageAttachment `json:"attachments"`
 }
 
 type Push struct {
@@ -32,18 +49,28 @@ type Push struct {
 }
 
 type ForwardedMessage struct {
-	UID  int    `json:"uid"`
+	UID  int    `json:"user_id"`
 	Date int64  `json:"date"`
 	Body string `json:"body"`
 }
 
-type Attachment struct {
+type MessageAttachment struct {
 	Type     string           `json:"type"`
 	Audio    *AudioAttachment `json:"audio"`
 	Video    *VideoAttachment `json:"video"`
 	Photo    *PhotoAttachment `json:"photo"`
 	Document *DocAttachment   `json:"doc"`
 	Link     *LinkAttachment  `json:"link"`
+}
+
+type HistoryAttachment struct {
+	Attachments []HistoryAttachmentItem `json:"items"`
+	NextFrom    string                  `json:"next_from"`
+}
+
+type HistoryAttachmentItem struct {
+	MID        int                `json:"message_id"`
+	Attachment *MessageAttachment `json:"attachment"`
 }
 
 type AudioAttachment struct {
@@ -74,18 +101,20 @@ type VideoAttachment struct {
 }
 
 type PhotoAttachment struct {
-	PhotoID     int    `json:"pid"`
-	AID         int    `json:"aid"`
-	OwnerID     int    `json:"owner_id"`
-	Source      string `json:"src"`
-	SourceBig   string `json:"src_big"`
-	SourceSmall string `json:"src_small"`
-	SourceXBig  string `json:"src_xbig"`
-	Width       int    `json:"width"`
-	Height      int    `json:"height"`
-	Text        string `json:"text"`
-	Created     int64  `json:"created"`
-	AccessKey   string `json:"access_key"`
+	PhotoID   int    `json:"pid"`
+	AID       int    `json:"aid"`
+	OwnerID   int    `json:"owner_id"`
+	Photo75   string `json:"photo_75"`
+	Photo130  string `json:"photo_130"`
+	Photo604  string `json:"photo_604"`
+	Photo807  string `json:"photo_807"`
+	Photo1280 string `json:"photo_1280"`
+	Photo2560 string `json:"photo_2560"`
+	Width     int    `json:"width"`
+	Height    int    `json:"height"`
+	Text      string `json:"text"`
+	Created   int64  `json:"created"`
+	AccessKey string `json:"access_key"`
 }
 
 type DocAttachment struct {
@@ -106,7 +135,7 @@ type LinkAttachment struct {
 	Target      string `json:"target"`
 }
 
-func (client *VKClient) GetDialogs(count int, params url.Values) ([]Message, error) {
+func (client *VKClient) GetDialogs(count int, params url.Values) (Dialog, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -114,16 +143,34 @@ func (client *VKClient) GetDialogs(count int, params url.Values) ([]Message, err
 
 	resp, err := client.makeRequest("messages.getDialogs", params)
 	if err != nil {
-		return []Message{}, err
+		return Dialog{}, err
 	}
-	var dialogs []Message
-	clearedString := deleteFirstKey(string(resp.Response))
-	json.Unmarshal([]byte(clearedString), &dialogs)
 
-	return dialogs, nil
+	var dialog Dialog
+	json.Unmarshal(resp.Response, &dialog)
+
+	return dialog, nil
 }
 
-func (client *VKClient) GetMessages(count int, params url.Values) ([]Message, error) {
+func (client *VKClient) GetHistoryAttachments(peerID int, mediaType string, count int, params url.Values) (HistoryAttachment, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+	params.Add("count", strconv.Itoa(count))
+	params.Add("media_type", mediaType)
+	params.Add("peer_id", strconv.Itoa(peerID))
+
+	resp, err := client.makeRequest("messages.getHistoryAttachments", params)
+	if err != nil {
+		return HistoryAttachment{}, err
+	}
+
+	var att HistoryAttachment
+	json.Unmarshal(resp.Response, &att)
+	return att, nil
+}
+
+func (client *VKClient) GetMessages(count int, params url.Values) (Message, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -131,12 +178,11 @@ func (client *VKClient) GetMessages(count int, params url.Values) ([]Message, er
 
 	resp, err := client.makeRequest("messages.get", params)
 	if err != nil {
-		return []Message{}, err
+		return Message{}, err
 	}
 
-	var messages []Message
-	clearedString := deleteFirstKey(string(resp.Response))
-	json.Unmarshal([]byte(clearedString), &messages)
+	var messages Message
+	json.Unmarshal(resp.Response, &messages)
 
 	return messages, nil
 }

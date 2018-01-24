@@ -18,27 +18,32 @@ const (
 )
 
 type User struct {
-	UID                     int       `json:"uid"`
-	FirstName               string    `json:"first_name"`
-	LastName                string    `json:"last_name"`
-	Sex                     int       `json:"sex"`
-	Nickname                string    `json:"nickname"`
-	ScreenName              string    `json:"screen_name"`
-	BDate                   string    `json:"bdate"`
-	City                    int       `json:"city"`
-	Country                 int       `json:"country"`
-	Photo                   string    `json:"photo"`
-	PhotoMedium             string    `json:"photo_medium"`
-	PhotoBig                string    `json:"photo_big"`
-	HasMobile               int       `json:"has_mobile"`
-	Online                  int       `json:"online"`
-	CanPost                 int       `json:"can_post"`
-	CanSeeAllPosts          int       `json:"can_see_all_posts"`
-	Status                  string    `json:"activity"`
-	LastOnline              *LastSeen `json:"last_seen"`
-	Hidden                  int       `json:"hidden"`
-	Relation                int       `json:"relation"`
-	CanWritePrivateMessages int       `json:"can_write_private_message"`
+	UID                     int          `json:"id"`
+	FirstName               string       `json:"first_name"`
+	LastName                string       `json:"last_name"`
+	Sex                     int          `json:"sex"`
+	Nickname                string       `json:"nickname"`
+	ScreenName              string       `json:"screen_name"`
+	BDate                   string       `json:"bdate"`
+	City                    int          `json:"city"`
+	Country                 *UserCountry `json:"country"`
+	Photo                   string       `json:"photo"`
+	PhotoMedium             string       `json:"photo_medium"`
+	PhotoBig                string       `json:"photo_big"`
+	HasMobile               int          `json:"has_mobile"`
+	Online                  int          `json:"online"`
+	CanPost                 int          `json:"can_post"`
+	CanSeeAllPosts          int          `json:"can_see_all_posts"`
+	CanWritePrivateMessages int          `json:"can_write_private_message"`
+	Status                  string       `json:"activity"`
+	LastOnline              *LastSeen    `json:"last_seen"`
+	Hidden                  int          `json:"hidden"`
+	Relation                int          `json:"relation"`
+}
+
+type UserCountry struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
 }
 
 type LastSeen struct {
