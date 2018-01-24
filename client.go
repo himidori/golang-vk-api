@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"strings"
 )
 
 const (
@@ -157,8 +156,4 @@ func (client *VKClient) makeRequest(method string, params url.Values) (APIRespon
 		return APIResponse{}, errors.New("Error code: " + strconv.Itoa(apiresp.ResponseError.ErrorCode) + ", " + apiresp.ResponseError.ErrorMsg)
 	}
 	return apiresp, nil
-}
-
-func deleteFirstKey(s string) string {
-	return "[" + s[strings.Index(s, ",")+1:len(s)-1] + "]"
 }
