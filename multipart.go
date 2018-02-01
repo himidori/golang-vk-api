@@ -25,6 +25,7 @@ func getFilesSizeMB(files []string) (int, error) {
 		}
 
 		size += fi.Size()
+		file.Close()
 	}
 
 	return int(size / 1048576), nil
