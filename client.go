@@ -15,17 +15,23 @@ const (
 	apiURL   = "https://api.vk.com/method/%s"
 )
 
+const (
+	DeviceIPhone = iota
+	DeviceWPhone
+	DeviceAndroid
+)
+
 type VKClient struct {
 	Self   Token
 	Client *http.Client
 }
 
-func NewVKClient(user string, password string) (*VKClient, error) {
+func NewVKClient(device int, user string, password string) (*VKClient, error) {
 	vkclient := &VKClient{
 		Client: &http.Client{},
 	}
 
-	token, err := vkclient.auth(user, password)
+	token, err := vkclient.auth(device, user, password)
 	if err != nil {
 		return nil, err
 	}
@@ -90,20 +96,40 @@ func (client *VKClient) isTokenValid(token string) (bool, error) {
 	var user []User
 	json.Unmarshal(apiresp.Response, &user)
 	client.Self.UID = user[0].UID
+	client.Self.FirstName = user[0].FirstName
+	client.Self.LastName = user[0].LastName
 
 	return true, nil
 }
 
-func (client *VKClient) auth(user string, password string) (Token, error) {
+func (client *VKClient) auth(device int, user string, password string) (Token, error) {
 	req, err := http.NewRequest("GET", tokenURL, nil)
 	if err != nil {
 		return Token{}, err
 	}
 
+	clientID := ""
+	clientSecret := ""
+
+	switch device {
+	case DeviceIPhone:
+		clientID = "3140623"
+		clientSecret = "VeWdmVclDCtn6ihuP1nt"
+	case DeviceWPhone:
+		clientID = "3697615"
+		clientSecret = "AlVXZFMUqyrnABp8ncuU"
+	case DeviceAndroid:
+		clientID = "2274003"
+		clientSecret = "hHbZxrka2uZ6jB1inYsH"
+	default:
+		clientID = "3140623"
+		clientSecret = "VeWdmVclDCtn6ihuP1nt"
+	}
+
 	q := req.URL.Query()
 	q.Add("grant_type", "password")
-	q.Add("client_id", "3140623")
-	q.Add("client_secret", "VeWdmVclDCtn6ihuP1nt")
+	q.Add("client_id", clientID)
+	q.Add("client_secret", clientSecret)
 	q.Add("username", user)
 	q.Add("password", password)
 	q.Add("v", "5.40")
