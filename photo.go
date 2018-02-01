@@ -61,7 +61,7 @@ func (client *VKClient) photoWallUpload(groupID int, files []string) (*photoWall
 		return nil, err
 	}
 
-	req, err := client.getMultipartRequest(serverInfo.UploadURL, "photo", files)
+	req, err := client.getPhotoMultipartReq(serverInfo.UploadURL, files)
 	if err != nil {
 		return nil, err
 	}
@@ -78,9 +78,9 @@ func (client *VKClient) photoWallUpload(groupID int, files []string) (*photoWall
 
 	uploadData := new(photoWallUploadResult)
 	json.Unmarshal(body, uploadData)
-	unescaped := strings.Replace(string(uploadData.Photo), "\\", "", -1)
-	unescaped = unescaped[1 : len(unescaped)-1]
-	uploadData.Photo = []byte(unescaped)
+	escaped := strings.Replace(string(uploadData.Photo), "\\", "", -1)
+	escaped = escaped[1 : len(escaped)-1]
+	uploadData.Photo = []byte(escaped)
 
 	return uploadData, nil
 }
