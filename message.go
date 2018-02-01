@@ -106,18 +106,6 @@ type VideoAttachment struct {
 	CanAdd        int    `json:"can_add"`
 }
 
-type DocAttachment struct {
-	ID         int    `json:"id"`
-	OwnerID    int    `json:"owner_id"`
-	Title      string `json:"title"`
-	Size       int    `json:"size"`
-	Extenstion string `json:"ext"`
-	URL        string `json:"url"`
-	Date       int64  `json:"date"`
-	Type       int    `json:"type"`
-	IsLicensed int    `json:"is_licensed"`
-}
-
 type LinkAttachment struct {
 	URL         string `json:"url"`
 	Title       string `json:"title"`
