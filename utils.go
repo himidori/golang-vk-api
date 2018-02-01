@@ -1,7 +1,14 @@
 package vkapi
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 func ArrayToStr(a []int) string {
-	return strings.Join(a, ",")
+	s := []string{}
+	for _, num := range a {
+		s = append(s, strconv.Itoa(num))
+	}
+	return strings.Join(s, ",")
 }
