@@ -74,7 +74,7 @@ type HistoryAttachmentItem struct {
 }
 
 type AudioAttachment struct {
-	AudioID   int    `json:"aid"`
+	ID        int    `json:"id"`
 	OwnerID   int    `json:"owner_id"`
 	Artist    string `json:"artist"`
 	Title     string `json:"title"`
@@ -84,48 +84,38 @@ type AudioAttachment struct {
 }
 
 type VideoAttachment struct {
-	VideoID     int    `json:"vid"`
-	OwnerID     int    `json:"owner_id"`
-	Title       string `json:"title"`
-	Duration    int    `json:"duration"`
-	Description string `json:"description"`
-	Date        int64  `json:"date"`
-	Views       int    `json:"views"`
-	Image       string `json:"image"`
-	ImageBig    string `json:"image_big"`
-	ImageSmall  string `json:"image_small"`
-	ImageXBig   string `json:"image_xbig"`
-	AccessKey   string `json:"access_key"`
-	Platform    string `json:"platform"`
-	CanEdit     int    `json:"can_edit"`
-}
-
-type PhotoAttachment struct {
-	PhotoID   int    `json:"pid"`
-	AID       int    `json:"aid"`
-	OwnerID   int    `json:"owner_id"`
-	Photo75   string `json:"photo_75"`
-	Photo130  string `json:"photo_130"`
-	Photo604  string `json:"photo_604"`
-	Photo807  string `json:"photo_807"`
-	Photo1280 string `json:"photo_1280"`
-	Photo2560 string `json:"photo_2560"`
-	Width     int    `json:"width"`
-	Height    int    `json:"height"`
-	Text      string `json:"text"`
-	Created   int64  `json:"created"`
-	AccessKey string `json:"access_key"`
+	ID            int    `json:"id"`
+	OwnerID       int    `json:"owner_id"`
+	Title         string `json:"title"`
+	Duration      int    `json:"duration"`
+	Description   string `json:"description"`
+	Date          int64  `json:"date"`
+	AddingDate    int64  `json:"adding_date"`
+	Views         int    `json:"views"`
+	Width         int    `json:"width"`
+	Height        int    `json:"height"`
+	Photo130      string `json:"photo130"`
+	Photo320      string `json:"photo320"`
+	Photo800      string `json:"photo800"`
+	FirstFrame320 string `json:"first_frame_320"`
+	FirstFrame160 string `json:"first_frame_160"`
+	FirstFrame130 string `json:"first_frame_130"`
+	FirstFrame800 string `json:"first_frame_800"`
+	Player        string `json:"player"`
+	CanEdit       int    `json:"can_edit"`
+	CanAdd        int    `json:"can_add"`
 }
 
 type DocAttachment struct {
-	DocID      int    `json:"did"`
+	ID         int    `json:"id"`
 	OwnerID    int    `json:"owner_id"`
 	Title      string `json:"title"`
 	Size       int    `json:"size"`
 	Extenstion string `json:"ext"`
 	URL        string `json:"url"`
 	Date       int64  `json:"date"`
-	AccessKey  string `json:"access_key"`
+	Type       int    `json:"type"`
+	IsLicensed int    `json:"is_licensed"`
 }
 
 type LinkAttachment struct {
