@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 const (
@@ -21,9 +22,15 @@ const (
 	DeviceAndroid
 )
 
+type ratelimiter struct {
+	requestsCount   int
+	lastRequestTime time.Time
+}
+
 type VKClient struct {
 	Self   Token
 	Client *http.Client
+	rl     *ratelimiter
 }
 
 func NewVKClient(device int, user string, password string) (*VKClient, error) {
@@ -37,6 +44,8 @@ func NewVKClient(device int, user string, password string) (*VKClient, error) {
 	}
 
 	vkclient.Self = token
+
+	vkclient.rl = &ratelimiter{}
 
 	me, err := vkclient.GetUsers(strconv.Itoa(vkclient.Self.UID))
 	if err != nil {
@@ -63,6 +72,7 @@ func NewVKClientWithToken(token string) (*VKClient, error) {
 		return nil, err
 	}
 	vkclient.Self.AccessToken = token
+	vkclient.rl = &ratelimiter{}
 
 	return vkclient, nil
 }
@@ -156,6 +166,19 @@ func (client *VKClient) auth(device int, user string, password string) (Token, e
 }
 
 func (client *VKClient) makeRequest(method string, params url.Values) (APIResponse, error) {
+	if client.rl.requestsCount == 3 {
+		secs := time.Since(client.rl.lastRequestTime).Seconds()
+		ms := int((1 - secs) * 1000)
+		if ms > 0 {
+			duration := time.Duration(ms * int(time.Millisecond))
+			fmt.Println("attempted to make more than 3 requests per second, "+
+				"sleeping for", ms, "ms")
+			time.Sleep(duration)
+		}
+
+		client.rl.requestsCount = 0
+	}
+
 	endpoint := fmt.Sprintf(apiURL, method)
 	if params == nil {
 		params = url.Values{}
@@ -169,6 +192,9 @@ func (client *VKClient) makeRequest(method string, params url.Values) (APIRespon
 		return APIResponse{}, err
 	}
 	defer resp.Body.Close()
+
+	client.rl.requestsCount++
+	client.rl.lastRequestTime = time.Now()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
