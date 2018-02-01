@@ -81,3 +81,22 @@ func (client *VKClient) GetWallPosts(id interface{}, count int, params url.Value
 
 	return posts, nil
 }
+
+func (client *VKClient) WallPost(ownerID int, message string, params url.Values) (int, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+	params.Add("owner_id", strconv.Itoa(ownerID))
+	params.Add("message", message)
+
+	resp, err := client.makeRequest("wall.post", params)
+	if err != nil {
+		return 0, err
+	}
+	m := map[string]int{}
+	if err = json.Unmarshal(resp.Response, &m); err != nil {
+		return 0, err
+	}
+
+	return m["post_id"], nil
+}
