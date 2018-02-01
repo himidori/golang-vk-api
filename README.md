@@ -58,5 +58,5 @@ func main() {
 	for msg := range ch {
 		log.Printf("new message from user %d: %s\n", msg.UserID, msg.Body)
 	}
-
 }
+```
