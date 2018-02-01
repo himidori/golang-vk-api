@@ -25,7 +25,7 @@ type User struct {
 	Nickname                string       `json:"nickname"`
 	ScreenName              string       `json:"screen_name"`
 	BDate                   string       `json:"bdate"`
-	City                    int          `json:"city"`
+	City                    *UserCity    `json:"city"`
 	Country                 *UserCountry `json:"country"`
 	Photo                   string       `json:"photo"`
 	PhotoMedium             string       `json:"photo_medium"`
@@ -39,6 +39,11 @@ type User struct {
 	LastOnline              *LastSeen    `json:"last_seen"`
 	Hidden                  int          `json:"hidden"`
 	Relation                int          `json:"relation"`
+}
+
+type UserCity struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
 }
 
 type UserCountry struct {
