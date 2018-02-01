@@ -3,6 +3,7 @@ package vkapi
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -10,10 +11,39 @@ import (
 	"strconv"
 )
 
+func getFilesSizeMB(files []string) (int, error) {
+	var size int64
+
+	for _, f := range files {
+		file, err := os.Open(f)
+		if err != nil {
+			return 0, err
+		}
+		fi, err := file.Stat()
+		if err != nil {
+			return 0, err
+		}
+
+		size += fi.Size()
+	}
+
+	return int(size / 1048576), nil
+}
+
 func (client *VKClient) getMultipartRequest(link string, fileType string, files []string) (*http.Request, error) {
 	if len(files) > 6 {
 		return nil, errors.New("you can't upload more than 6 files")
 	}
+
+	size, err := getFilesSizeMB(files)
+	if err != nil {
+		return nil, err
+	}
+
+	if size > 50 {
+		return nil, errors.New("summary files size can't be higher than 50mb")
+	}
+	fmt.Println("size", size)
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -39,7 +69,7 @@ func (client *VKClient) getMultipartRequest(link string, fileType string, files 
 		idx++
 	}
 
-	err := writer.Close()
+	err = writer.Close()
 	if err != nil {
 		return nil, err
 	}
