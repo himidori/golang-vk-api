@@ -56,10 +56,11 @@ type LastSeen struct {
 	Platform int   `json:"platform"`
 }
 
-func (client *VKClient) GetUsers(users string) ([]User, error) {
+func (client *VKClient) GetUsers(users []int) ([]User, error) {
+	idsString := ArrayToStr(users)
 	fields := "nickname,screen_name,sex,bdate,city,country,photo,photo_medium,photo_big,has_mobile,contacts,education,online,relation,last_seen,activity,can_write_private_message,can_see_all_posts,can_post,universities"
 	v := url.Values{}
-	v.Add("user_ids", users)
+	v.Add("user_ids", idsString)
 	v.Add("fields", fields)
 
 	resp, err := client.makeRequest("users.get", v)
