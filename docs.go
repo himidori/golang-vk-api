@@ -20,6 +20,11 @@ type DocAttachment struct {
 	IsLicensed int    `json:"is_licensed"`
 }
 
+type Docs struct {
+	Count     int              `json:"count"`
+	Documents []*DocAttachment `json:"items"`
+}
+
 func (client *VKClient) docGetWallUploadServer(groupID int) (string, error) {
 	gidStr := strconv.Itoa(groupID)
 	if gidStr[0] == '-' {
@@ -94,4 +99,21 @@ func (client *VKClient) GetDocsString(docs []*DocAttachment) string {
 	}
 
 	return strings.Join(s, ",")
+}
+
+func (client *VKClient) DocsSearch(query string, count int, params url.Values) (*Docs, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+	params.Set("q", query)
+	params.Set("count", strconv.Itoa(count))
+
+	resp, err := client.makeRequest("docs.search", params)
+	if err != nil {
+		panic(err)
+	}
+
+	docs := new(Docs)
+	json.Unmarshal(resp.Response, &docs)
+	return docs, nil
 }
