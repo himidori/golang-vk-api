@@ -113,7 +113,7 @@ type LinkAttachment struct {
 	Target      string `json:"target"`
 }
 
-func (client *VKClient) GetDialogs(count int, params url.Values) (Dialog, error) {
+func (client *VKClient) DialogsGet(count int, params url.Values) (Dialog, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -148,7 +148,7 @@ func (client *VKClient) GetHistoryAttachments(peerID int, mediaType string, coun
 	return att, nil
 }
 
-func (client *VKClient) GetMessages(count int, params url.Values) (Message, error) {
+func (client *VKClient) MessagesGet(count int, params url.Values) (Message, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -165,7 +165,7 @@ func (client *VKClient) GetMessages(count int, params url.Values) (Message, erro
 	return messages, nil
 }
 
-func (client *VKClient) SendMessage(user interface{}, message string, params url.Values) error {
+func (client *VKClient) MessagesSend(user interface{}, message string, params url.Values) error {
 	if params == nil {
 		params = url.Values{}
 	}
