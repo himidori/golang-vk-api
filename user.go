@@ -17,6 +17,13 @@ const (
 	PlatformWeb
 )
 
+var (
+	userFields = "nickname,screen_name,sex,bdate,city,country," +
+		"photo,photo_medium, photo_big,has_mobile,contacts," +
+		"education,online,relation,last_seen,activity," +
+		"can_write_private_message,can_see_all_posts,can_post,universities"
+)
+
 type User struct {
 	UID                     int          `json:"id"`
 	FirstName               string       `json:"first_name"`
@@ -56,19 +63,18 @@ type LastSeen struct {
 	Platform int   `json:"platform"`
 }
 
-func (client *VKClient) GetUsers(users []int) ([]User, error) {
+func (client *VKClient) UsersGet(users []int) ([]*User, error) {
 	idsString := ArrayToStr(users)
-	fields := "nickname,screen_name,sex,bdate,city,country,photo,photo_medium,photo_big,has_mobile,contacts,education,online,relation,last_seen,activity,can_write_private_message,can_see_all_posts,can_post,universities"
 	v := url.Values{}
 	v.Add("user_ids", idsString)
-	v.Add("fields", fields)
+	v.Add("fields", userFields)
 
 	resp, err := client.makeRequest("users.get", v)
 	if err != nil {
-		return []User{}, err
+		return nil, err
 	}
 
-	var userList []User
+	var userList []*User
 	json.Unmarshal(resp.Response, &userList)
 
 	return userList, nil
