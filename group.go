@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	fields = "description,age_limits,activity,can_create_topic," +
+	groupFields = "description,age_limits,activity,can_create_topic," +
 		"can_message,can_post,can_see_all_posts,contacts,has_photo," +
 		"is_messages_blocked"
 )
@@ -44,6 +44,11 @@ type GroupContact struct {
 	Description string `json:"desc"`
 }
 
+type GroupMembers struct {
+	Count   int     `json:"count"`
+	Members []*User `json:"items"`
+}
+
 func (client *VKClient) GroupSendInvite(groupID int, userID int) error {
 	params := url.Values{}
 	params.Set("group_id", strconv.Itoa(groupID))
@@ -60,7 +65,7 @@ func (client *VKClient) GroupSearch(query string, count int) (*GroupSearchResult
 	params := url.Values{}
 	params.Set("q", query)
 	params.Set("count", strconv.Itoa(count))
-	params.Set("fields", fields)
+	params.Set("fields", groupFields)
 	resp, err := client.makeRequest("groups.search", params)
 	if err != nil {
 		return nil, err
@@ -82,6 +87,21 @@ func (client *VKClient) GroupGet(userID int, count int) (*GroupSearchResult, err
 	}
 
 	var res *GroupSearchResult
+	json.Unmarshal(resp.Response, &res)
+	return res, nil
+}
+
+func (client *VKClient) GroupGetMembers(group_id int, count int) (*GroupMembers, error) {
+	params := url.Values{}
+	params.Set("group_id", strconv.Itoa(group_id))
+	params.Set("count", strconv.Itoa(count))
+	params.Set("fields", userFields)
+	resp, err := client.makeRequest("groups.getMembers", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var res *GroupMembers
 	json.Unmarshal(resp.Response, &res)
 	return res, nil
 }
