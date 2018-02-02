@@ -101,7 +101,7 @@ func (client *VKClient) GetDocsString(docs []*DocAttachment) string {
 	return strings.Join(s, ",")
 }
 
-func (client *VKClient) DocsSearch(query string, count int, params url.Values) (*Docs, error) {
+func (client *VKClient) DocsSearch(query string, count int, params url.Values) (int, []*DocAttachment, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -110,10 +110,10 @@ func (client *VKClient) DocsSearch(query string, count int, params url.Values) (
 
 	resp, err := client.makeRequest("docs.search", params)
 	if err != nil {
-		panic(err)
+		return 0, nil, err
 	}
 
-	docs := new(Docs)
+	var docs *Docs
 	json.Unmarshal(resp.Response, &docs)
-	return docs, nil
+	return docs.Count, docs.Documents, nil
 }

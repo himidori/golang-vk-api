@@ -7,13 +7,13 @@ import (
 )
 
 type Dialog struct {
-	Count    int    `json:"count"`
-	Messages []Item `json:"items"`
+	Count    int     `json:"count"`
+	Messages []*Item `json:"items"`
 }
 
 type Message struct {
-	Count    int             `json:"count"`
-	Messages []DialogMessage `json:"items"`
+	Count    int              `json:"count"`
+	Messages []*DialogMessage `json:"items"`
 }
 
 type Item struct {
@@ -23,24 +23,24 @@ type Item struct {
 }
 
 type DialogMessage struct {
-	MID               int                 `json:"id"`
-	Date              int64               `json:"date"`
-	Out               int                 `json:"out"`
-	UID               int                 `json:"user_id"`
-	ReadState         int                 `json:"read_state"`
-	Title             string              `json:"title"`
-	Body              string              `json:"body"`
-	RandomID          int                 `json:"random_id"`
-	ChatID            int                 `json:"chat_id"`
-	ChatActive        string              `json:"chat_active"`
-	PushSettings      *Push               `json:"push_settings"`
-	UsersCount        int                 `json:"users_count"`
-	AdminID           int                 `json:"admin_id"`
-	Photo50           string              `json:"photo_50"`
-	Photo100          string              `json:"photo_100"`
-	Photo200          string              `json:"photo_200"`
-	ForwardedMessages []ForwardedMessage  `json:"fwd_messages"`
-	Attachments       []MessageAttachment `json:"attachments"`
+	MID               int                  `json:"id"`
+	Date              int64                `json:"date"`
+	Out               int                  `json:"out"`
+	UID               int                  `json:"user_id"`
+	ReadState         int                  `json:"read_state"`
+	Title             string               `json:"title"`
+	Body              string               `json:"body"`
+	RandomID          int                  `json:"random_id"`
+	ChatID            int                  `json:"chat_id"`
+	ChatActive        string               `json:"chat_active"`
+	PushSettings      *Push                `json:"push_settings"`
+	UsersCount        int                  `json:"users_count"`
+	AdminID           int                  `json:"admin_id"`
+	Photo50           string               `json:"photo_50"`
+	Photo100          string               `json:"photo_100"`
+	Photo200          string               `json:"photo_200"`
+	ForwardedMessages []*ForwardedMessage  `json:"fwd_messages"`
+	Attachments       []*MessageAttachment `json:"attachments"`
 }
 
 type Push struct {
@@ -113,7 +113,7 @@ type LinkAttachment struct {
 	Target      string `json:"target"`
 }
 
-func (client *VKClient) DialogsGet(count int, params url.Values) (Dialog, error) {
+func (client *VKClient) DialogsGet(count int, params url.Values) (*Dialog, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -121,16 +121,16 @@ func (client *VKClient) DialogsGet(count int, params url.Values) (Dialog, error)
 
 	resp, err := client.makeRequest("messages.getDialogs", params)
 	if err != nil {
-		return Dialog{}, err
+		return nil, err
 	}
 
-	var dialog Dialog
+	var dialog *Dialog
 	json.Unmarshal(resp.Response, &dialog)
 
 	return dialog, nil
 }
 
-func (client *VKClient) GetHistoryAttachments(peerID int, mediaType string, count int, params url.Values) (HistoryAttachment, error) {
+func (client *VKClient) GetHistoryAttachments(peerID int, mediaType string, count int, params url.Values) (*HistoryAttachment, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -140,15 +140,15 @@ func (client *VKClient) GetHistoryAttachments(peerID int, mediaType string, coun
 
 	resp, err := client.makeRequest("messages.getHistoryAttachments", params)
 	if err != nil {
-		return HistoryAttachment{}, err
+		return nil, err
 	}
 
-	var att HistoryAttachment
+	var att *HistoryAttachment
 	json.Unmarshal(resp.Response, &att)
 	return att, nil
 }
 
-func (client *VKClient) MessagesGet(count int, params url.Values) (Message, error) {
+func (client *VKClient) MessagesGet(count int, params url.Values) (int, []*DialogMessage, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -156,13 +156,13 @@ func (client *VKClient) MessagesGet(count int, params url.Values) (Message, erro
 
 	resp, err := client.makeRequest("messages.get", params)
 	if err != nil {
-		return Message{}, err
+		return 0, nil, err
 	}
 
 	var messages Message
 	json.Unmarshal(resp.Response, &messages)
 
-	return messages, nil
+	return messages.Count, messages.Messages, nil
 }
 
 func (client *VKClient) MessagesSend(user interface{}, message string, params url.Values) error {

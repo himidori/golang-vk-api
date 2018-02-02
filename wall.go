@@ -7,8 +7,8 @@ import (
 )
 
 type Wall struct {
-	Count int        `json:"count"`
-	Posts []WallPost `json:"items"`
+	Count int         `json:"count"`
+	Posts []*WallPost `json:"items"`
 }
 
 type WallPost struct {
@@ -57,7 +57,7 @@ type Source struct {
 	Type string `json:"type"`
 }
 
-func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (*Wall, error) {
+func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (int, []*WallPost, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -72,13 +72,13 @@ func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (*
 
 	resp, err := client.makeRequest("wall.get", params)
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 
 	var posts *Wall
 	json.Unmarshal(resp.Response, &posts)
 
-	return posts, nil
+	return posts.Count, posts.Posts, nil
 }
 
 func (client *VKClient) WallPost(ownerID int, message string, params url.Values) (int, error) {

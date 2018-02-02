@@ -7,11 +7,11 @@ import (
 )
 
 type FriendsRequests struct {
-	Count    int           `json:"count"`
-	Requests []*FriendItem `json:"items"`
+	Count    int        `json:"count"`
+	Requests []*Request `json:"items"`
 }
 
-type FriendItem struct {
+type Request struct {
 	UserID        int     `json:"user_id"`
 	MutualFriends *Mutual `json:"mutual"`
 }
@@ -21,7 +21,7 @@ type Mutual struct {
 	Users []int `json:"users"`
 }
 
-func (client *VKClient) FriendsGetRequests(count int, out int) (*FriendsRequests, error) {
+func (client *VKClient) FriendsGetRequests(count int, out int) (int, []*Request, error) {
 	params := url.Values{}
 	params.Set("count", strconv.Itoa(count))
 	params.Set("out", strconv.Itoa(out))
@@ -29,12 +29,12 @@ func (client *VKClient) FriendsGetRequests(count int, out int) (*FriendsRequests
 
 	resp, err := client.makeRequest("friends.getRequests", params)
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 
 	var reqs *FriendsRequests
 	json.Unmarshal(resp.Response, &reqs)
-	return reqs, nil
+	return reqs.Count, reqs.Requests, nil
 }
 
 func (client *VKClient) FriendsAdd(userID int, text string, follow int) error {

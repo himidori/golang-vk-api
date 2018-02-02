@@ -20,8 +20,8 @@ const (
 )
 
 type Likes struct {
-	Count int        `json:"count"`
-	Users []LikeUser `json:"items"`
+	Count int         `json:"count"`
+	Users []*LikeUser `json:"items"`
 }
 
 type LikeUser struct {
@@ -31,7 +31,7 @@ type LikeUser struct {
 	LastName  string `json:"last_name"`
 }
 
-func (client *VKClient) GetLikes(itemType string, ownerID int, itemID int, count int, params url.Values) (Likes, error) {
+func (client *VKClient) LikesGet(itemType string, ownerID int, itemID int, count int, params url.Values) (int, []*LikeUser, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -44,11 +44,10 @@ func (client *VKClient) GetLikes(itemType string, ownerID int, itemID int, count
 
 	resp, err := client.makeRequest("likes.getList", params)
 	if err != nil {
-		return Likes{}, err
+		return 0, nil, err
 	}
 
 	var likes Likes
 	json.Unmarshal(resp.Response, &likes)
-	return likes, nil
-
+	return likes.Count, likes.Users, nil
 }
