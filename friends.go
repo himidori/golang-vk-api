@@ -21,7 +21,7 @@ type Mutual struct {
 	Users []int `json:"users"`
 }
 
-func (client *VKClient) GetFriendRequests(count int, out int) (*FriendsRequests, error) {
+func (client *VKClient) FriendsGetRequests(count int, out int) (*FriendsRequests, error) {
 	params := url.Values{}
 	params.Set("count", strconv.Itoa(count))
 	params.Set("out", strconv.Itoa(out))
@@ -37,7 +37,7 @@ func (client *VKClient) GetFriendRequests(count int, out int) (*FriendsRequests,
 	return reqs, nil
 }
 
-func (client *VKClient) AcceptFriendRequest(userID int, text string, follow int) error {
+func (client *VKClient) FriendsAdd(userID int, text string, follow int) error {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(userID))
 	params.Set("follow", strconv.Itoa(follow))
