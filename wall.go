@@ -57,11 +57,10 @@ type Source struct {
 	Type string `json:"type"`
 }
 
-func (client *VKClient) GetWallPosts(id interface{}, count int, params url.Values) (Wall, error) {
+func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (*Wall, error) {
 	if params == nil {
 		params = url.Values{}
 	}
-
 	params.Set("count", strconv.Itoa(count))
 
 	switch id.(type) {
@@ -73,10 +72,10 @@ func (client *VKClient) GetWallPosts(id interface{}, count int, params url.Value
 
 	resp, err := client.makeRequest("wall.get", params)
 	if err != nil {
-		return Wall{}, err
+		return nil, err
 	}
 
-	var posts Wall
+	var posts *Wall
 	json.Unmarshal(resp.Response, &posts)
 
 	return posts, nil
