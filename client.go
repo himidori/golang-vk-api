@@ -47,7 +47,7 @@ func NewVKClient(device int, user string, password string) (*VKClient, error) {
 
 	vkclient.rl = &ratelimiter{}
 
-	me, err := vkclient.GetUsers([]int{vkclient.Self.UID})
+	me, err := vkclient.UsersGet([]int{vkclient.Self.UID})
 	if err != nil {
 		return nil, err
 	}
