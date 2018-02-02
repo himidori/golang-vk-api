@@ -171,8 +171,8 @@ func (client *VKClient) makeRequest(method string, params url.Values) (APIRespon
 		ms := int((1 - secs) * 1000)
 		if ms > 0 {
 			duration := time.Duration(ms * int(time.Millisecond))
-			fmt.Println("attempted to make more than 3 requests per second, "+
-				"sleeping for", ms, "ms")
+			//fmt.Println("attempted to make more than 3 requests per second, "+
+			//"sleeping for", ms, "ms")
 			time.Sleep(duration)
 		}
 
