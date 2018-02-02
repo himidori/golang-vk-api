@@ -52,3 +52,15 @@ func (client *VKClient) FriendsAdd(userID int, text string, follow int) error {
 
 	return nil
 }
+
+func (client *VKClient) FriendsDelete(userID int) error {
+	params := url.Values{}
+	params.Set("user_id", strconv.Itoa(userID))
+
+	_, err := client.makeRequest("friends.delete", params)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
