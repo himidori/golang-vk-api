@@ -12,28 +12,28 @@ type Wall struct {
 }
 
 type WallPost struct {
-	ID           int                 `json:"id"`
-	FromID       int                 `json:"from_id"`
-	OwnerID      int                 `json:"owner_id"`
-	ToID         int                 `json:"to_id"`
-	Date         int64               `json:"date"`
-	MarkedAsAd   int                 `json:"marked_as_ads"`
-	PostType     string              `json:"post_type"`
-	CopyPostDate int64               `json:"copy_post_date"`
-	CopyPostType string              `json:"copy_post_type"`
-	CopyOwnerID  int                 `json:"copy_owner_id"`
-	CopyPostID   int                 `json:"copy_post_id"`
-	CreatedBy    int                 `json:"created_by"`
-	Text         string              `json:"text"`
-	CanDelete    int                 `json:"can_delete"`
-	CanPin       int                 `json:"can_pin"`
-	Attachments  []MessageAttachment `json:"attachments"`
-	PostSource   *Source             `json:"post_source"`
-	Comments     *Comment            `json:"comments"`
-	Likes        *Like               `json:"likes"`
-	Reposts      *Repost             `json:"reposts"`
-	Online       int                 `json:"online"`
-	ReplyCount   int                 `json:"reply_count"`
+	ID           int                  `json:"id"`
+	FromID       int                  `json:"from_id"`
+	OwnerID      int                  `json:"owner_id"`
+	ToID         int                  `json:"to_id"`
+	Date         int64                `json:"date"`
+	MarkedAsAd   int                  `json:"marked_as_ads"`
+	PostType     string               `json:"post_type"`
+	CopyPostDate int64                `json:"copy_post_date"`
+	CopyPostType string               `json:"copy_post_type"`
+	CopyOwnerID  int                  `json:"copy_owner_id"`
+	CopyPostID   int                  `json:"copy_post_id"`
+	CreatedBy    int                  `json:"created_by"`
+	Text         string               `json:"text"`
+	CanDelete    int                  `json:"can_delete"`
+	CanPin       int                  `json:"can_pin"`
+	Attachments  []*MessageAttachment `json:"attachments"`
+	PostSource   *Source              `json:"post_source"`
+	Comments     *Comment             `json:"comments"`
+	Likes        *Like                `json:"likes"`
+	Reposts      *Repost              `json:"reposts"`
+	Online       int                  `json:"online"`
+	ReplyCount   int                  `json:"reply_count"`
 }
 
 type Comment struct {

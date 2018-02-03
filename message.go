@@ -49,9 +49,11 @@ type Push struct {
 }
 
 type ForwardedMessage struct {
-	UID  int    `json:"user_id"`
-	Date int64  `json:"date"`
-	Body string `json:"body"`
+	UID               int                  `json:"user_id"`
+	Date              int64                `json:"date"`
+	Body              string               `json:"body"`
+	Attachments       []*MessageAttachment `json:"attachments"`
+	ForwardedMessages []*ForwardedMessage  `json:"fwd_messages"`
 }
 
 type MessageAttachment struct {
@@ -61,6 +63,7 @@ type MessageAttachment struct {
 	Photo    *PhotoAttachment `json:"photo"`
 	Document *DocAttachment   `json:"doc"`
 	Link     *LinkAttachment  `json:"link"`
+	Wall     *WallPost        `json:"wall"`
 }
 
 type HistoryAttachment struct {
@@ -159,10 +162,28 @@ func (client *VKClient) MessagesGet(count int, params url.Values) (int, []*Dialo
 		return 0, nil, err
 	}
 
-	var messages Message
-	json.Unmarshal(resp.Response, &messages)
+	var message *Message
+	json.Unmarshal(resp.Response, &message)
 
-	return messages.Count, messages.Messages, nil
+	return message.Count, message.Messages, nil
+}
+
+func (client *VKClient) MessagesGetByID(message_ids []int, params url.Values) (int, []*DialogMessage, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+	s := ArrayToStr(message_ids)
+	params.Add("message_ids", s)
+
+	resp, err := client.makeRequest("messages.getById", params)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var message *Message
+	json.Unmarshal(resp.Response, &message)
+
+	return message.Count, message.Messages, nil
 }
 
 func (client *VKClient) MessagesSend(user interface{}, message string, params url.Values) error {
