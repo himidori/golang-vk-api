@@ -108,6 +108,9 @@ func (client *VKClient) isTokenValid(token string) (bool, error) {
 	client.Self.UID = user[0].UID
 	client.Self.FirstName = user[0].FirstName
 	client.Self.LastName = user[0].LastName
+	client.Self.PicSmall = user[0].Photo
+	client.Self.PicMedium = user[0].PhotoMedium
+	client.Self.PicBig = user[0].PhotoBig
 
 	return true, nil
 }

@@ -31,7 +31,7 @@ type DialogMessage struct {
 	Title             string               `json:"title"`
 	Body              string               `json:"body"`
 	RandomID          int                  `json:"random_id"`
-	ChatID            int                  `json:"chat_id"`
+	ChatID            int64                `json:"chat_id"`
 	ChatActive        string               `json:"chat_active"`
 	PushSettings      *Push                `json:"push_settings"`
 	UsersCount        int                  `json:"users_count"`
@@ -57,13 +57,26 @@ type ForwardedMessage struct {
 }
 
 type MessageAttachment struct {
-	Type     string           `json:"type"`
-	Audio    *AudioAttachment `json:"audio"`
-	Video    *VideoAttachment `json:"video"`
-	Photo    *PhotoAttachment `json:"photo"`
-	Document *DocAttachment   `json:"doc"`
-	Link     *LinkAttachment  `json:"link"`
-	Wall     *WallPost        `json:"wall"`
+	Type     string             `json:"type"`
+	Audio    *AudioAttachment   `json:"audio"`
+	Video    *VideoAttachment   `json:"video"`
+	Photo    *PhotoAttachment   `json:"photo"`
+	Document *DocAttachment     `json:"doc"`
+	Link     *LinkAttachment    `json:"link"`
+	Wall     *WallPost          `json:"wall"`
+	Sticker  *StickerAttachment `json:"sticker"`
+}
+
+type StickerAttachment struct {
+	ID        int    `json:"id"`
+	ProductID int    `json:"product_id"`
+	Photo64   string `json:"photo_64"`
+	Photo128  string `json:"photo_128"`
+	Photo256  string `json:'photo_256"`
+	Photo352  string `json:"photo_352"`
+	Photo512  string `json:"photo_512"`
+	Width     int    `json:"width"`
+	Height    int    `json:"height"`
 }
 
 type HistoryAttachment struct {
