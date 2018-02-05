@@ -72,6 +72,7 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 
 			resp, err := client.Client.Do(req)
 			if err != nil {
+				fmt.Printf("error while doing request: %s\n", err)
 				return
 			}
 
@@ -124,7 +125,6 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 				if err != nil {
 					fmt.Println("error requesting longpoll server")
 				}
-				continue
 			}
 		}
 	}()
