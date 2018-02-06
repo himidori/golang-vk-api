@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type LongPollServer struct {
@@ -47,6 +48,54 @@ func (client *VKClient) getLongPollServer() (LongPollServer, error) {
 	return server, nil
 }
 
+func (client *VKClient) longpollGet(server LongPollServer) ([]byte, error) {
+	req, err := http.NewRequest("GET", "https://"+server.Server, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	q := req.URL.Query()
+	q.Add("act", "a_check")
+	q.Add("key", server.Key)
+	q.Add("ts", strconv.FormatInt(server.TS, 10))
+	q.Add("wait", "25")
+	q.Add("mode", "2")
+	q.Add("version", "1")
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
+func (client *VKClient) retry(server LongPollServer) ([]byte, error) {
+	var resp []byte
+	var err error
+
+	for i := 0; i < 3; i++ {
+		resp, err = client.longpollGet(server)
+
+		if err == nil {
+			return resp, nil
+		}
+
+		fmt.Printf("request to longpoll server failed, " +
+			"sleeping for 3 secs\n")
+		time.Sleep(time.Second * 3)
+	}
+
+	return nil, err
+}
+
 func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 	ch := make(chan LongPollMessage, 10)
 	server, err := client.getLongPollServer()
@@ -56,30 +105,10 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 
 	go func() {
 		for {
-			req, err := http.NewRequest("GET", "https://"+server.Server, nil)
+			body, err := client.retry(server)
 			if err != nil {
-				return
-			}
-
-			q := req.URL.Query()
-			q.Add("act", "a_check")
-			q.Add("key", server.Key)
-			q.Add("ts", strconv.FormatInt(server.TS, 10))
-			q.Add("wait", "25")
-			q.Add("mode", "2")
-			q.Add("version", "1")
-			req.URL.RawQuery = q.Encode()
-
-			resp, err := client.Client.Do(req)
-			if err != nil {
-				fmt.Printf("error while doing request: %s\n", err)
-				return
-			}
-
-			defer resp.Body.Close()
-
-			body, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
+				fmt.Println("failed request to longpoll server after 3 retries")
+				close(ch)
 				return
 			}
 
