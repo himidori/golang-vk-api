@@ -70,11 +70,11 @@ func NewVKClientWithToken(token string) (*VKClient, error) {
 		Client: &http.Client{},
 	}
 
-	res, err := vkclient.isTokenValid(token)
-
-	if !res {
+	err := vkclient.isTokenValid(token)
+	if err != nil {
 		return nil, err
 	}
+
 	vkclient.Self.AccessToken = token
 	vkclient.rl = &ratelimiter{}
 	vkclient.cb = &callbackHandler{
@@ -84,30 +84,31 @@ func NewVKClientWithToken(token string) (*VKClient, error) {
 	return vkclient, nil
 }
 
-func (client *VKClient) isTokenValid(token string) (bool, error) {
+func (client *VKClient) isTokenValid(token string) error {
 	req, err := http.NewRequest("GET", "https://api.vk.com/method/users.get", nil)
 	if err != nil {
-		return false, err
+		return err
 	}
 	q := req.URL.Query()
 	q.Add("access_token", token)
 	q.Add("v", "5.71")
+	q.Add("fields", "photo,photo_medium,photo_big")
 	req.URL.RawQuery = q.Encode()
 	resp, err := client.Client.Do(req)
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return false, err
+		return err
 	}
 	defer resp.Body.Close()
 
 	var apiresp APIResponse
 	json.Unmarshal(body, &apiresp)
 	if apiresp.ResponseError.ErrorCode != 0 {
-		return false, errors.New("auth error: " + apiresp.ResponseError.ErrorMsg)
+		return errors.New("auth error: " + apiresp.ResponseError.ErrorMsg)
 	}
 
 	var user []User
@@ -119,7 +120,7 @@ func (client *VKClient) isTokenValid(token string) (bool, error) {
 	client.Self.PicMedium = user[0].PhotoMedium
 	client.Self.PicBig = user[0].PhotoBig
 
-	return true, nil
+	return nil
 }
 
 func (client *VKClient) auth(device int, user string, password string) (Token, error) {

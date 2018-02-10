@@ -19,7 +19,7 @@ const (
 
 var (
 	userFields = "nickname,screen_name,sex,bdate,city,country," +
-		"photo,photo_medium, photo_big,has_mobile,contacts," +
+		"photo,photo_medium,photo_big,has_mobile,contacts," +
 		"education,online,relation,last_seen,activity," +
 		"can_write_private_message,can_see_all_posts,can_post,universities"
 )
