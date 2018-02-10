@@ -18,8 +18,6 @@ client, err := vkapi.NewVKClientWithToken("token")
 ## Listening to longpoll events
 
 ```go
-client.ListenLongPollServer()
-
 // listening received messages
 client.AddLongpollCallback("msgin", func(m *vkapi.LongPollMessage) {
 	fmt.Printf("new message received from uid %d\n", m.UserID)
@@ -43,5 +41,8 @@ client.AddLongpollCallback("msgread", func(m *vkapi.LongPollMessage) {
 // listening users online
 client.AddLongpollCallback("msgonline", func(m *vkapi.LongPollMessage) {
 	fmt.Printf("user %d is now online\n", m.UserID)
+
+// starting 
+client.ListenLongPollServer()
 })
 ```

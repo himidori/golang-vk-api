@@ -101,67 +101,65 @@ func (client *VKClient) ListenLongPollServer() {
 		return
 	}
 
-	go func() {
-		for {
-			body, err := client.retry(server)
-			if err != nil {
-				fmt.Println("failed request to longpoll server after 3 retries")
-				return
-			}
+	for {
+		body, err := client.retry(server)
+		if err != nil {
+			fmt.Println("failed request to longpoll server after 3 retries")
+			return
+		}
 
-			var updates LongPollUpdate
-			err = json.Unmarshal(body, &updates)
+		var updates LongPollUpdate
+		err = json.Unmarshal(body, &updates)
 
-			switch updates.Failed {
-			case 0:
-				for _, update := range updates.Updates {
-					updateID := update[0].(float64)
-					message := new(LongPollMessage)
+		switch updates.Failed {
+		case 0:
+			for _, update := range updates.Updates {
+				updateID := update[0].(float64)
+				message := new(LongPollMessage)
 
-					switch updateID {
-					case 4: //new message
-						message.MessageID = int(update[1].(float64))
-						message.MessageFlags = int(update[2].(float64))
-						message.UserID = int64(update[3].(float64))
-						message.Date = int64(update[4].(float64))
-						message.Title = update[5].(string)
-						message.Body = update[6].(string)
-						message.Attachments = make(map[string]string)
+				switch updateID {
+				case 4: //new message
+					message.MessageID = int(update[1].(float64))
+					message.MessageFlags = int(update[2].(float64))
+					message.UserID = int64(update[3].(float64))
+					message.Date = int64(update[4].(float64))
+					message.Title = update[5].(string)
+					message.Body = update[6].(string)
+					message.Attachments = make(map[string]string)
 
-						for k, v := range update[7].(map[string]interface{}) {
-							message.Attachments[k] = v.(string)
-						}
-
-						if message.MessageFlags == 19 || message.MessageFlags == 51 ||
-							message.MessageFlags == 531 || message.MessageFlags == 563 ||
-							message.MessageFlags == 3 || message.MessageFlags == 35 {
-							message.MessageType = "msgout"
-						} else {
-							message.MessageType = "msgin"
-						}
-
-					case 2: //message deleted
-						message.MessageType = "msgdel"
-						message.MessageID = int(update[1].(float64))
-						message.UserID = int64(update[3].(float64))
-					case 3: //message read
-						message.MessageType = "msgread"
-						message.MessageID = int(update[1].(float64))
-					case 8: //user online
-						message.MessageType = "msgonline"
-						message.UserID = int64(update[1].(float64))
+					for k, v := range update[7].(map[string]interface{}) {
+						message.Attachments[k] = v.(string)
 					}
-					client.handleCallback(message.MessageType, message)
+
+					if message.MessageFlags == 19 || message.MessageFlags == 51 ||
+						message.MessageFlags == 531 || message.MessageFlags == 563 ||
+						message.MessageFlags == 3 || message.MessageFlags == 35 {
+						message.MessageType = "msgout"
+					} else {
+						message.MessageType = "msgin"
+					}
+
+				case 2: //message deleted
+					message.MessageType = "msgdel"
+					message.MessageID = int(update[1].(float64))
+					message.UserID = int64(update[3].(float64))
+				case 3: //message read
+					message.MessageType = "msgread"
+					message.MessageID = int(update[1].(float64))
+				case 8: //user online
+					message.MessageType = "msgonline"
+					message.UserID = int64(update[1].(float64))
 				}
-				server.TS = updates.TS
-			case 1:
-				server.TS = updates.TS
-			case 2, 3:
-				server, err = client.getLongPollServer()
-				if err != nil {
-					fmt.Println("error requesting longpoll server")
-				}
+				client.handleCallback(message.MessageType, message)
+			}
+			server.TS = updates.TS
+		case 1:
+			server.TS = updates.TS
+		case 2, 3:
+			server, err = client.getLongPollServer()
+			if err != nil {
+				fmt.Println("error requesting longpoll server")
 			}
 		}
-	}()
+	}
 }
