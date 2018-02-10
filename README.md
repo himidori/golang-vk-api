@@ -15,7 +15,7 @@ client, err := vkapi.NewVKClient(vkapi.DeviceIPhone, "username", "password")
 client, err := vkapi.NewVKClientWithToken("token")
 ```
 
-## Listening to longpoll events
+## Listening longpoll events
 
 ```go
 // listening received messages
