@@ -47,5 +47,4 @@ client.AddLongpollCallback("msgonline", func(m *vkapi.LongPollMessage) {
 
 // starting 
 client.ListenLongPollServer()
-})
 ```
