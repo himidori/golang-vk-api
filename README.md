@@ -1,7 +1,10 @@
 # VK API wrapper in golang
 
 ## Installing
+
+```
 go get github.com/himidori/golang-vk-api
+```
 
 ## Authorizing using username and password
 
