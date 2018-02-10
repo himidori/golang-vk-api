@@ -3,60 +3,40 @@
 ## Installing
 go get github.com/himidori/golang-vk-api
 
-## Example of usage
+## Authorizing using username and password
 
 ```go
-package main
+    client, err := vkapi.NewVKClient(vkapi.DeviceIPhone, "username", "password")
+```
 
-import (
-	"log"
-	"net/url"
+## Authorizing using access token
 
-	"github.com/himidori/golang-vk-api"
-)
+```go
+    client, err := vkapi.NewVKClientWithToken("token")
+```
 
-func main() {
-	//authorizing as IPhone device using login and password
-	client, err := vkapi.NewVKClient(vkapi.DeviceIPhone, "", "")
-	if err != nil {
-		log.Fatal(err)
-	}
+## Listening to longpoll events
 
-	log.Printf("authorized as %s %s (id%d)\n", client.Self.FirstName, client.Self.LastName,
-		client.Self.UID)
+```go
+	client.ListenLongPollServer()
 
-	//sending a post with photo attachments to a group's wall
-	pics := []string{
-		"/home/yuimaestro/agirl.jpg",
-		"/home/yuimaestro/agirl2.jpg",
-	}
+	// listening received messages
+	client.AddLongpollCallback("msgin", func(m *vkapi.LongPollMessage) {
+		fmt.Printf("new message received from uid %d\n", m.UserID)
+	})
 
-	photos, err := client.UploadGroupWallPhotos(111, pics)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// listening sent messages
+	client.AddLongpollCallback("msgout", func(m *vkapi.LongPollMessage) {
+		fmt.Printf("sent message to uid %d\n", m.UserID)
+	})
 
-	log.Printf("uploaded %d pictures\n", len(photos))
+	// listeting read messages
+	client.AddLongpollCallback("msgread", func(m *vkapi.LongPollMessage) {
+		fmt.Printf("message %d was read\n", m.MessageID)
+	})
 
-	s := client.GetPhotosString(photos)
-	params := url.Values{}
-	params.Set("attachments", s)
-
-	msg, err := client.WallPost(-111, "testmessage", params)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Printf("successfuly posted a message with ID %d\n", msg)
-
-	//starting a longpoll channel to listen for events
-	ch, err := client.ListenLongPollServer()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for msg := range ch {
-		log.Printf("new message from user %d: %s\n", msg.UserID, msg.Body)
-	}
-}
+	// listening users online
+	client.AddLongpollCallback("msgonline", func(m *vkapi.LongPollMessage) {
+		fmt.Printf("user %d is now online\n", m.UserID)
+	})
 ```
