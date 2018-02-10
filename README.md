@@ -25,6 +25,11 @@ client.AddLongpollCallback("msgin", func(m *vkapi.LongPollMessage) {
 	fmt.Printf("new message received from uid %d\n", m.UserID)
 })
 
+// listening deleted messages
+client.AddLongpollCallback("msgdel", func(m *vkapi.LongPollMessage) {
+	fmt.Printf("message %d was deleted\n", m.MessageID)
+})
+
 // listening sent messages
 client.AddLongpollCallback("msgout", func(m *vkapi.LongPollMessage) {
 	fmt.Printf("sent message to uid %d\n", m.UserID)
