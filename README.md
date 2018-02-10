@@ -36,7 +36,7 @@ client.AddLongpollCallback("msgout", func(m *vkapi.LongPollMessage) {
 	fmt.Printf("sent message to uid %d\n", m.UserID)
 })
 
-// listeting read messages
+// listening read messages
 client.AddLongpollCallback("msgread", func(m *vkapi.LongPollMessage) {
 	fmt.Printf("message %d was read\n", m.MessageID)
 })
