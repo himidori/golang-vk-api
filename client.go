@@ -31,6 +31,7 @@ type VKClient struct {
 	Self   Token
 	Client *http.Client
 	rl     *ratelimiter
+	cb     *callbackHandler
 }
 
 func NewVKClient(device int, user string, password string) (*VKClient, error) {
@@ -46,6 +47,9 @@ func NewVKClient(device int, user string, password string) (*VKClient, error) {
 	vkclient.Self = token
 
 	vkclient.rl = &ratelimiter{}
+	vkclient.cb = &callbackHandler{
+		events: make(map[string]func(*LongPollMessage)),
+	}
 
 	me, err := vkclient.UsersGet([]int{vkclient.Self.UID})
 	if err != nil {
@@ -73,6 +77,9 @@ func NewVKClientWithToken(token string) (*VKClient, error) {
 	}
 	vkclient.Self.AccessToken = token
 	vkclient.rl = &ratelimiter{}
+	vkclient.cb = &callbackHandler{
+		events: make(map[string]func(*LongPollMessage)),
+	}
 
 	return vkclient, nil
 }

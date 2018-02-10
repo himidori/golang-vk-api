@@ -22,17 +22,15 @@ type LongPollUpdate struct {
 }
 
 type LongPollMessage struct {
-	MessageType  int
+	MessageType  string
 	MessageID    int
 	MessageFlags int
-	UserID       int
+	UserID       int64
 	Date         int64
 	Title        string
 	Body         string
 	Attachments  map[string]string
 }
-
-type LongPollChannel <-chan LongPollMessage
 
 func (client *VKClient) getLongPollServer() (LongPollServer, error) {
 	resp, err := client.makeRequest("messages.getLongPollServer", nil)
@@ -96,11 +94,11 @@ func (client *VKClient) retry(server LongPollServer) ([]byte, error) {
 	return nil, err
 }
 
-func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
-	ch := make(chan LongPollMessage, 10)
+func (client *VKClient) ListenLongPollServer() {
 	server, err := client.getLongPollServer()
 	if err != nil {
-		return ch, err
+		fmt.Println("failed to get longpoll server")
+		return
 	}
 
 	go func() {
@@ -108,7 +106,6 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 			body, err := client.retry(server)
 			if err != nil {
 				fmt.Println("failed request to longpoll server after 3 retries")
-				close(ch)
 				return
 			}
 
@@ -119,14 +116,13 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 			case 0:
 				for _, update := range updates.Updates {
 					updateID := update[0].(float64)
+					message := new(LongPollMessage)
 
 					switch updateID {
 					case 4: //new message
-						var message LongPollMessage
-						message.MessageType = 4
 						message.MessageID = int(update[1].(float64))
 						message.MessageFlags = int(update[2].(float64))
-						message.UserID = int(update[3].(float64))
+						message.UserID = int64(update[3].(float64))
 						message.Date = int64(update[4].(float64))
 						message.Title = update[5].(string)
 						message.Body = update[6].(string)
@@ -136,15 +132,26 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 							message.Attachments[k] = v.(string)
 						}
 
-						ch <- message
+						if message.MessageFlags == 19 || message.MessageFlags == 51 ||
+							message.MessageFlags == 531 || message.MessageFlags == 563 ||
+							message.MessageFlags == 3 || message.MessageFlags == 35 {
+							message.MessageType = "msgout"
+						} else {
+							message.MessageType = "msgin"
+						}
 
 					case 2: //message deleted
-						var message LongPollMessage
-						message.MessageType = 2
+						message.MessageType = "msgdel"
 						message.MessageID = int(update[1].(float64))
-						message.UserID = int(update[3].(float64))
-						ch <- message
+						message.UserID = int64(update[3].(float64))
+					case 3: //message read
+						message.MessageType = "msgread"
+						message.MessageID = int(update[1].(float64))
+					case 8: //user online
+						message.MessageType = "msgonline"
+						message.UserID = int64(update[1].(float64))
 					}
+					client.handleCallback(message.MessageType, message)
 				}
 				server.TS = updates.TS
 			case 1:
@@ -157,6 +164,4 @@ func (client *VKClient) ListenLongPollServer() (LongPollChannel, error) {
 			}
 		}
 	}()
-
-	return ch, nil
 }
