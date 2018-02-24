@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 type Dialog struct {
@@ -218,4 +219,33 @@ func (client *VKClient) MessagesSend(user interface{}, message string, params ur
 	}
 
 	return nil
+}
+
+func (client *VKClient) MessagesDelete(ids []int, spam int, deleteForAll int) (int, error) {
+	params := url.Values{}
+	s := ArrayToStr(ids)
+	params.Add("message_ids", s)
+	params.Add("spam", strconv.Itoa(spam))
+	params.Add("delete_for_all", strconv.Itoa(deleteForAll))
+
+	resp, err := client.makeRequest("messages.delete", params)
+	if err != nil {
+		return 0, err
+	}
+
+	delCount := 0
+	var idMap map[string]int
+	reader := strings.NewReader(string(resp.Response))
+	err = json.NewDecoder(reader).Decode(&idMap)
+	if err != nil {
+		return 0, err
+	}
+
+	for _, v := range idMap {
+		if v == 1 {
+			delCount++
+		}
+	}
+
+	return delCount, nil
 }
