@@ -36,7 +36,7 @@ type VKClient struct {
 
 func NewVKClient(device int, user string, password string) (*VKClient, error) {
 	vkclient := &VKClient{
-		Client: &http.Client{},
+		Client: &http.Client{Timeout: time.Second * 10},
 	}
 
 	token, err := vkclient.auth(device, user, password)
