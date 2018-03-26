@@ -67,7 +67,7 @@ func NewVKClient(device int, user string, password string) (*VKClient, error) {
 
 func NewVKClientWithToken(token string) (*VKClient, error) {
 	vkclient := &VKClient{
-		Client: &http.Client{},
+		Client: &http.Client{Timeout: time.Second * 10},
 	}
 
 	err := vkclient.isTokenValid(token)
