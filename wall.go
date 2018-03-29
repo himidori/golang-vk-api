@@ -18,6 +18,7 @@ type WallPost struct {
 	ToID         int                  `json:"to_id"`
 	Date         int64                `json:"date"`
 	MarkedAsAd   int                  `json:"marked_as_ads"`
+	IsPinned     int                  `json:"is_pinned"`
 	PostType     string               `json:"post_type"`
 	CopyPostDate int64                `json:"copy_post_date"`
 	CopyPostType string               `json:"copy_post_type"`
