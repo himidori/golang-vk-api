@@ -86,7 +86,7 @@ func (client *VKClient) ListenLongPollServer() {
 	for {
 		body, err := client.longpollRequest(server)
 		if err != nil {
-			log.Println("longpoll request failed: %s\n", err)
+			log.Println("longpoll request failed: %s", err)
 			time.Sleep(time.Second * 5)
 			continue
 		}
@@ -141,7 +141,7 @@ func (client *VKClient) ListenLongPollServer() {
 		case 2, 3:
 			server, err = client.getLongPollServer()
 			if err != nil {
-				log.Println("failed to get longpoll server: %s\n", err)
+				log.Println("failed to get longpoll server: %s", err)
 			}
 		}
 	}
