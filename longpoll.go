@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -46,7 +47,7 @@ func (client *VKClient) getLongPollServer() (LongPollServer, error) {
 	return server, nil
 }
 
-func (client *VKClient) longpollGet(server LongPollServer) ([]byte, error) {
+func (client *VKClient) longpollRequest(server LongPollServer) ([]byte, error) {
 	req, err := http.NewRequest("GET", "https://"+server.Server, nil)
 	if err != nil {
 		return nil, err
@@ -75,25 +76,6 @@ func (client *VKClient) longpollGet(server LongPollServer) ([]byte, error) {
 	return body, nil
 }
 
-func (client *VKClient) retry(server LongPollServer) ([]byte, error) {
-	var resp []byte
-	var err error
-
-	for i := 0; i < 3; i++ {
-		resp, err = client.longpollGet(server)
-
-		if err == nil {
-			return resp, nil
-		}
-
-		fmt.Printf("request to longpoll server failed, " +
-			"sleeping for 3 secs\n")
-		time.Sleep(time.Second * 3)
-	}
-
-	return nil, err
-}
-
 func (client *VKClient) ListenLongPollServer() {
 	server, err := client.getLongPollServer()
 	if err != nil {
@@ -102,10 +84,11 @@ func (client *VKClient) ListenLongPollServer() {
 	}
 
 	for {
-		body, err := client.retry(server)
+		body, err := client.longpollRequest(server)
 		if err != nil {
-			fmt.Println("failed request to longpoll server after 3 retries")
-			return
+			log.Println("longpoll request failed: %s\n", err)
+			time.Sleep(time.Second * 5)
+			continue
 		}
 
 		var updates LongPollUpdate
@@ -158,7 +141,7 @@ func (client *VKClient) ListenLongPollServer() {
 		case 2, 3:
 			server, err = client.getLongPollServer()
 			if err != nil {
-				fmt.Println("error requesting longpoll server")
+				log.Println("failed to get longpoll server: %s\n", err)
 			}
 		}
 	}
