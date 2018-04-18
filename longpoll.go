@@ -136,8 +136,10 @@ func (client *VKClient) ListenLongPollServer() {
 				client.handleCallback(message.MessageType, message)
 			}
 			server.TS = updates.TS
+
 		case 1:
 			server.TS = updates.TS
+
 		case 2:
 			newSrv, err := client.getLongPollServer()
 			if err != nil {
@@ -145,6 +147,7 @@ func (client *VKClient) ListenLongPollServer() {
 				continue
 			}
 			server.Key = newSrv.Key
+
 		case 3:
 			newSrv, err := client.getLongPollServer()
 			if err != nil {
