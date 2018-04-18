@@ -138,11 +138,21 @@ func (client *VKClient) ListenLongPollServer() {
 			server.TS = updates.TS
 		case 1:
 			server.TS = updates.TS
-		case 2, 3:
-			server, err = client.getLongPollServer()
+		case 2:
+			newSrv, err := client.getLongPollServer()
 			if err != nil {
-				log.Println("failed to get longpoll server: %s", err)
+				log.Println("failed to get longpoll server for key update: %s", err)
+				continue
 			}
+			server.Key = newSrv.Key
+		case 3:
+			newSrv, err := client.getLongPollServer()
+			if err != nil {
+				log.Println("failed to get longpoll for key/ts update: %s", err)
+				continue
+			}
+			server.Key = newSrv.Key
+			server.TS = newSrv.TS
 		}
 	}
 }
