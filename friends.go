@@ -28,6 +28,7 @@ type Mutual struct {
 
 func (client *VKClient) FriendsGet(uid int, count int) (int, []*User, error) {
 	params := url.Values{}
+	params.Set("user_id", strconv.Itoa(uid))
 	params.Set("count", strconv.Itoa(count))
 	params.Set("fields", userFields)
 
