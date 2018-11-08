@@ -82,6 +82,29 @@ func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (i
 	return posts.Count, posts.Posts, nil
 }
 
+func (client *VKClient) WallGetByID(id string, params url.Values) ([]*WallPost, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+
+	params.Set("posts", id)
+
+	resp, err := client.makeRequest("wall.getById", params)
+	if err != nil {
+		return nil, err
+	}
+
+	if params.Get(`extended`) == `1` {
+		var wall Wall
+		json.Unmarshal(resp.Response, &wall)
+		return wall.Posts, nil
+	} else {
+		var posts []*WallPost
+		json.Unmarshal(resp.Response, &posts)
+		return posts, nil
+	}
+}
+
 func (client *VKClient) WallPost(ownerID int, message string, params url.Values) (int, error) {
 	if params == nil {
 		params = url.Values{}
