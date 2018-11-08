@@ -9,6 +9,8 @@ import (
 type Wall struct {
 	Count int         `json:"count"`
 	Posts []*WallPost `json:"items"`
+	Users []*User     `json:"users"`
+	Groups []*Group    `json:"groups"`
 }
 
 type WallPost struct {
@@ -59,7 +61,7 @@ type Source struct {
 	Type string `json:"type"`
 }
 
-func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (int, []*WallPost, error) {
+func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (*Wall, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -74,16 +76,16 @@ func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (i
 
 	resp, err := client.makeRequest("wall.get", params)
 	if err != nil {
-		return 0, nil, err
+		return nil, err
 	}
 
-	var posts *Wall
-	json.Unmarshal(resp.Response, &posts)
+	var wall *Wall
+	json.Unmarshal(resp.Response, &wall)
 
-	return posts.Count, posts.Posts, nil
+	return wall, nil
 }
 
-func (client *VKClient) WallGetByID(id string, params url.Values) ([]*WallPost, error) {
+func (client *VKClient) WallGetByID(id string, params url.Values) (*Wall, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -95,15 +97,14 @@ func (client *VKClient) WallGetByID(id string, params url.Values) ([]*WallPost, 
 		return nil, err
 	}
 
+	wall := &Wall{}
 	if params.Get(`extended`) == `1` {
-		var wall Wall
 		json.Unmarshal(resp.Response, &wall)
-		return wall.Posts, nil
 	} else {
-		var posts []*WallPost
-		json.Unmarshal(resp.Response, &posts)
-		return posts, nil
+		json.Unmarshal(resp.Response, &wall.Posts)
 	}
+	wall.Count = len(wall.Posts)
+	return wall, nil
 }
 
 func (client *VKClient) WallPost(ownerID int, message string, params url.Values) (int, error) {
