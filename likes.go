@@ -10,6 +10,7 @@ const (
 	TypePost         = "post"
 	TypeComment      = "comment"
 	TypePhoto        = "photo"
+	TypeDocument     = "doc"
 	TypeAudio        = "audio"
 	TypeVideo        = "video"
 	TypeNote         = "note"
