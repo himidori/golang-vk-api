@@ -7,10 +7,10 @@ import (
 )
 
 type Wall struct {
-	Count int         `json:"count"`
-	Posts []*WallPost `json:"items"`
-	Users []*User     `json:"users"`
-	Groups []*Group    `json:"groups"`
+	Count    int         `json:"count"`
+	Posts    []*WallPost `json:"items"`
+	Profiles []*User     `json:"profiles"`
+	Groups   []*Group    `json:"groups"`
 }
 
 type WallPost struct {
