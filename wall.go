@@ -24,6 +24,7 @@ type WallPost struct {
 	CopyPostType string               `json:"copy_post_type"`
 	CopyOwnerID  int                  `json:"copy_owner_id"`
 	CopyPostID   int                  `json:"copy_post_id"`
+	CopyHistory  []*WallPost          `json:"copy_history"`
 	CreatedBy    int                  `json:"created_by"`
 	Text         string               `json:"text"`
 	CanDelete    int                  `json:"can_delete"`
