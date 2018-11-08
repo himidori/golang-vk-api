@@ -34,6 +34,11 @@ type VKClient struct {
 	cb     *callbackHandler
 }
 
+type TokenOptions struct {
+	ServiceToken    bool
+	ValidateOnStart bool
+}
+
 func NewVKClient(device int, user string, password string) (*VKClient, error) {
 	vkclient := &VKClient{
 		Client: &http.Client{},
@@ -65,14 +70,15 @@ func NewVKClient(device int, user string, password string) (*VKClient, error) {
 	return vkclient, nil
 }
 
-func NewVKClientWithToken(token string) (*VKClient, error) {
+func NewVKClientWithToken(token string, options *TokenOptions) (*VKClient, error) {
 	vkclient := &VKClient{
 		Client: &http.Client{},
 	}
 
-	err := vkclient.isTokenValid(token)
-	if err != nil {
-		return nil, err
+	if options != nil && options.ValidateOnStart {
+		if err := vkclient.isTokenValid(token, options); err != nil {
+			return nil, err
+		}
 	}
 
 	vkclient.Self.AccessToken = token
@@ -84,7 +90,7 @@ func NewVKClientWithToken(token string) (*VKClient, error) {
 	return vkclient, nil
 }
 
-func (client *VKClient) isTokenValid(token string) error {
+func (client *VKClient) isTokenValid(token string, options *TokenOptions) error {
 	req, err := http.NewRequest("GET", "https://api.vk.com/method/users.get", nil)
 	if err != nil {
 		return err
@@ -111,14 +117,16 @@ func (client *VKClient) isTokenValid(token string) error {
 		return errors.New("auth error: " + apiresp.ResponseError.ErrorMsg)
 	}
 
-	var user []User
-	json.Unmarshal(apiresp.Response, &user)
-	client.Self.UID = user[0].UID
-	client.Self.FirstName = user[0].FirstName
-	client.Self.LastName = user[0].LastName
-	client.Self.PicSmall = user[0].Photo
-	client.Self.PicMedium = user[0].PhotoMedium
-	client.Self.PicBig = user[0].PhotoBig
+	if options != nil && !options.ServiceToken {
+		var user []User
+		json.Unmarshal(apiresp.Response, &user)
+		client.Self.UID = user[0].UID
+		client.Self.FirstName = user[0].FirstName
+		client.Self.LastName = user[0].LastName
+		client.Self.PicSmall = user[0].Photo
+		client.Self.PicMedium = user[0].PhotoMedium
+		client.Self.PicBig = user[0].PhotoBig
+	}
 
 	return nil
 }
