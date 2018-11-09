@@ -2,6 +2,7 @@ package vkapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -19,8 +20,10 @@ func (client *VKClient) ResolveScreenName(name string) (ResolveScreenName, error
 
 	resp, err := client.makeRequest("utils.resolveScreenName", params)
 	if err == nil {
-
 		json.Unmarshal(resp.Response, &res)
+	}
+	if res.ObjectID == 0 || res.Type == "" {
+		err = fmt.Errorf("%s not found", name)
 	}
 	return res, err
 
