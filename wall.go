@@ -7,8 +7,10 @@ import (
 )
 
 type Wall struct {
-	Count int         `json:"count"`
-	Posts []*WallPost `json:"items"`
+	Count    int         `json:"count"`
+	Posts    []*WallPost `json:"items"`
+	Profiles []*User     `json:"profiles"`
+	Groups   []*Group    `json:"groups"`
 }
 
 type WallPost struct {
@@ -24,6 +26,7 @@ type WallPost struct {
 	CopyPostType string               `json:"copy_post_type"`
 	CopyOwnerID  int                  `json:"copy_owner_id"`
 	CopyPostID   int                  `json:"copy_post_id"`
+	CopyHistory  []*WallPost          `json:"copy_history"`
 	CreatedBy    int                  `json:"created_by"`
 	Text         string               `json:"text"`
 	CanDelete    int                  `json:"can_delete"`
@@ -58,7 +61,7 @@ type Source struct {
 	Type string `json:"type"`
 }
 
-func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (int, []*WallPost, error) {
+func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (*Wall, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -73,13 +76,35 @@ func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (i
 
 	resp, err := client.makeRequest("wall.get", params)
 	if err != nil {
-		return 0, nil, err
+		return nil, err
 	}
 
-	var posts *Wall
-	json.Unmarshal(resp.Response, &posts)
+	var wall *Wall
+	json.Unmarshal(resp.Response, &wall)
 
-	return posts.Count, posts.Posts, nil
+	return wall, nil
+}
+
+func (client *VKClient) WallGetByID(id string, params url.Values) (*Wall, error) {
+	if params == nil {
+		params = url.Values{}
+	}
+
+	params.Set("posts", id)
+
+	resp, err := client.makeRequest("wall.getById", params)
+	if err != nil {
+		return nil, err
+	}
+
+	wall := &Wall{}
+	if params.Get(`extended`) == `1` {
+		json.Unmarshal(resp.Response, &wall)
+	} else {
+		json.Unmarshal(resp.Response, &wall.Posts)
+	}
+	wall.Count = len(wall.Posts)
+	return wall, nil
 }
 
 func (client *VKClient) WallPost(ownerID int, message string, params url.Values) (int, error) {
