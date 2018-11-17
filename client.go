@@ -39,7 +39,7 @@ type TokenOptions struct {
 	ValidateOnStart bool
 }
 
-func NewVKClientBlank() *VKClient {
+func newVKClientBlank() *VKClient {
 	return &VKClient{
 		Client: &http.Client{},
 		rl:     &ratelimiter{},
@@ -50,7 +50,7 @@ func NewVKClientBlank() *VKClient {
 }
 
 func NewVKClient(device int, user string, password string) (*VKClient, error) {
-	vkclient := NewVKClientBlank()
+	vkclient := newVKClientBlank()
 
 	token, err := vkclient.auth(device, user, password)
 	if err != nil {
@@ -63,7 +63,7 @@ func NewVKClient(device int, user string, password string) (*VKClient, error) {
 }
 
 func NewVKClientWithToken(token string, options *TokenOptions) (*VKClient, error) {
-	vkclient := NewVKClientBlank()
+	vkclient := newVKClientBlank()
 	vkclient.Self.AccessToken = token
 	vkclient.Self.IsSerivceToken = options != nil && options.ServiceToken
 
