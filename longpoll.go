@@ -1,6 +1,7 @@
 package vkapi
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -76,7 +77,7 @@ func (client *VKClient) longpollRequest(server LongPollServer) ([]byte, error) {
 	return body, nil
 }
 
-func (client *VKClient) ListenLongPollServer() {
+func (client *VKClient) ListenLongPollServerWithCancel(cancelCtx context.Context) {
 	server, err := client.getLongPollServer()
 	if err != nil {
 		fmt.Println("failed to get longpoll server")
@@ -84,6 +85,12 @@ func (client *VKClient) ListenLongPollServer() {
 	}
 
 	for {
+		select {
+		case <-cancelCtx.Done():
+			return
+		default:
+		}
+
 		body, err := client.longpollRequest(server)
 		if err != nil {
 			log.Println("longpoll request failed: %s", err)
@@ -158,4 +165,8 @@ func (client *VKClient) ListenLongPollServer() {
 			server.TS = newSrv.TS
 		}
 	}
+}
+
+func (client *VKClient) ListenLongPollServer() {
+	client.ListenLongPollServerWithCancel(context.Background())
 }
