@@ -67,6 +67,12 @@ func NewVKClientWithToken(token string, options *TokenOptions) (*VKClient, error
 	vkclient.Self.AccessToken = token
 	vkclient.Self.IsSerivceToken = options != nil && options.ServiceToken
 
+	uid, err := vkclient.requestSelfID()
+	if err != nil {
+		return nil, err
+	}
+	vkclient.Self.UID = uid
+
 	if options != nil && options.ValidateOnStart {
 		if err := vkclient.updateSelfUser(); err != nil {
 			return nil, err
@@ -173,6 +179,24 @@ func (client *VKClient) auth(device int, user string, password string) (Token, e
 	}
 
 	return token, nil
+}
+
+func (client *VKClient) requestSelfID() (uid int, err error) {
+	resp, err := client.makeRequest("users.get", url.Values{})
+	if err != nil {
+		return 0, err
+	}
+	rawdata, err := resp.Response.MarshalJSON()
+	if err != nil {
+		return 0, err
+	}
+	data := make([]struct {
+		ID int `json:"id"`
+	}, 1)
+	if err := json.Unmarshal(rawdata, &data); err != nil {
+		return 0, err
+	}
+	return data[0].ID, nil
 }
 
 func (client *VKClient) makeRequest(method string, params url.Values) (APIResponse, error) {
