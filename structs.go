@@ -20,7 +20,6 @@ type Token struct {
 	UID              int    `json:"user_id"`
 	Error            string `json:"error"`
 	ErrorDescription string `json:"error_description"`
-	IsSerivceToken   bool
 	FirstName        string
 	LastName         string
 	PicSmall         string

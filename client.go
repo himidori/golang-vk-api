@@ -65,17 +65,20 @@ func NewVKClient(device int, user string, password string) (*VKClient, error) {
 func NewVKClientWithToken(token string, options *TokenOptions) (*VKClient, error) {
 	vkclient := newVKClientBlank()
 	vkclient.Self.AccessToken = token
-	vkclient.Self.IsSerivceToken = options != nil && options.ServiceToken
 
-	uid, err := vkclient.requestSelfID()
-	if err != nil {
-		return nil, err
-	}
-	vkclient.Self.UID = uid
+	if options != nil {
+		if options.ValidateOnStart {
+			uid, err := vkclient.requestSelfID()
+			if err != nil {
+				return nil, err
+			}
+			vkclient.Self.UID = uid
 
-	if options != nil && options.ValidateOnStart {
-		if err := vkclient.updateSelfUser(); err != nil {
-			return nil, err
+			if !options.ServiceToken {
+				if err := vkclient.updateSelfUser(); err != nil {
+					return nil, err
+				}
+			}
 		}
 	}
 
@@ -83,28 +86,21 @@ func NewVKClientWithToken(token string, options *TokenOptions) (*VKClient, error
 }
 
 func (client *VKClient) updateSelfUser() error {
-	if client.Self.IsSerivceToken {
-		client.Self.FirstName = ""
-		client.Self.LastName = ""
-		client.Self.PicSmall = ""
-		client.Self.PicMedium = ""
-		client.Self.PicBig = ""
-	} else {
-		me, err := client.UsersGet([]int{client.Self.UID})
-		if err != nil {
-			return err
-		}
-
-		client.Self.FirstName = me[0].FirstName
-		client.Self.LastName = me[0].LastName
-		client.Self.PicSmall = me[0].Photo
-		client.Self.PicMedium = me[0].PhotoMedium
-		client.Self.PicBig = me[0].PhotoBig
+	me, err := client.UsersGet([]int{client.Self.UID})
+	if err != nil {
+		return err
 	}
+
+	client.Self.FirstName = me[0].FirstName
+	client.Self.LastName = me[0].LastName
+	client.Self.PicSmall = me[0].Photo
+	client.Self.PicMedium = me[0].PhotoMedium
+	client.Self.PicBig = me[0].PhotoBig
+
 	return nil
 }
 
-func (s *ratelimiter) Wait()  {
+func (s *ratelimiter) Wait() {
 	if s.requestsCount == 3 {
 		secs := time.Since(s.lastRequestTime).Seconds()
 		ms := int((1 - secs) * 1000)
@@ -119,7 +115,7 @@ func (s *ratelimiter) Wait()  {
 	}
 }
 
-func (s *ratelimiter) Update()  {
+func (s *ratelimiter) Update() {
 	s.requestsCount++
 	s.lastRequestTime = time.Now()
 }
@@ -186,16 +182,24 @@ func (client *VKClient) requestSelfID() (uid int, err error) {
 	if err != nil {
 		return 0, err
 	}
+
 	rawdata, err := resp.Response.MarshalJSON()
 	if err != nil {
 		return 0, err
 	}
+
 	data := make([]struct {
 		ID int `json:"id"`
 	}, 1)
+
 	if err := json.Unmarshal(rawdata, &data); err != nil {
 		return 0, err
 	}
+
+	if len(data) == 0 {
+		return 0, nil
+	}
+
 	return data[0].ID, nil
 }
 
