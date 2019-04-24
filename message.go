@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	activityTypeTyping = "typing"
-	activityTypeAudioMsg = "audiomessage"
+	ActivityTypeTyping = "typing"
+	ActivityTypeAudioMsg = "audiomessage"
 )
 
 type Dialog struct {
