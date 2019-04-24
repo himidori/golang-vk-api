@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+const (
+	activityTypeTyping = "typing"
+	activityTypeAudioMsg = "audiomessage"
+)
+
 type Dialog struct {
 	Count    int     `json:"count"`
 	Messages []*Item `json:"items"`
@@ -248,4 +253,19 @@ func (client *VKClient) MessagesDelete(ids []int, spam int, deleteForAll int) (i
 	}
 
 	return delCount, nil
+}
+
+func (client *VKClient) MessagesSetActivity(user int, params url.Values) error {
+	if params == nil {
+		params = url.Values{}
+	}
+
+	params.Add("user_id", strconv.Itoa(user))
+
+	_, err := client.makeRequest("messages.setActivity", params)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
