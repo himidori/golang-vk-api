@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	ActivityTypeTyping = "typing"
+	ActivityTypeTyping   = "typing"
 	ActivityTypeAudioMsg = "audiomessage"
 )
 
@@ -78,7 +78,7 @@ type StickerAttachment struct {
 	ProductID int    `json:"product_id"`
 	Photo64   string `json:"photo_64"`
 	Photo128  string `json:"photo_128"`
-	Photo256  string `json:'photo_256"`
+	Photo256  string `json:"photo_256"`
 	Photo352  string `json:"photo_352"`
 	Photo512  string `json:"photo_512"`
 	Width     int    `json:"width"`
