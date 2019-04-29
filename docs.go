@@ -33,7 +33,7 @@ func (client *VKClient) docGetWallUploadServer(groupID int) (string, error) {
 
 	params := url.Values{}
 	params.Set("group_id", gidStr)
-	resp, err := client.makeRequest("docs.getWallUploadServer", params)
+	resp, err := client.MakeRequest("docs.getWallUploadServer", params)
 	if err != nil {
 		return "", err
 	}
@@ -80,7 +80,7 @@ func (client *VKClient) UploadGroupWallDoc(groupID int, fileName string) (*DocAt
 	params := url.Values{}
 	params.Set("file", file)
 
-	resp, err := client.makeRequest("docs.save", params)
+	resp, err := client.MakeRequest("docs.save", params)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func (client *VKClient) DocsSearch(query string, count int, params url.Values) (
 	params.Set("q", query)
 	params.Set("count", strconv.Itoa(count))
 
-	resp, err := client.makeRequest("docs.search", params)
+	resp, err := client.MakeRequest("docs.search", params)
 	if err != nil {
 		return 0, nil, err
 	}

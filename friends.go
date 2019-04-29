@@ -32,7 +32,7 @@ func (client *VKClient) FriendsGet(uid int, count int) (int, []*User, error) {
 	params.Set("count", strconv.Itoa(count))
 	params.Set("fields", userFields)
 
-	resp, err := client.makeRequest("friends.get", params)
+	resp, err := client.MakeRequest("friends.get", params)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -48,7 +48,7 @@ func (client *VKClient) FriendsGetRequests(count int, out int) (int, []*Request,
 	params.Set("out", strconv.Itoa(out))
 	params.Set("extended", "1")
 
-	resp, err := client.makeRequest("friends.getRequests", params)
+	resp, err := client.MakeRequest("friends.getRequests", params)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -66,7 +66,7 @@ func (client *VKClient) FriendsAdd(userID int, text string, follow int) error {
 		params.Set("text", text)
 	}
 
-	_, err := client.makeRequest("friends.add", params)
+	_, err := client.MakeRequest("friends.add", params)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (client *VKClient) FriendsDelete(userID int) error {
 	params := url.Values{}
 	params.Set("user_id", strconv.Itoa(userID))
 
-	_, err := client.makeRequest("friends.delete", params)
+	_, err := client.MakeRequest("friends.delete", params)
 	if err != nil {
 		return err
 	}

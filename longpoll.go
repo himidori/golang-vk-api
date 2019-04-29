@@ -35,7 +35,7 @@ type LongPollMessage struct {
 }
 
 func (client *VKClient) getLongPollServer() (LongPollServer, error) {
-	resp, err := client.makeRequest("messages.getLongPollServer", nil)
+	resp, err := client.MakeRequest("messages.getLongPollServer", nil)
 	if err != nil {
 		return LongPollServer{}, err
 	}

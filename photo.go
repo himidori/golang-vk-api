@@ -44,7 +44,7 @@ func (client *VKClient) photoGetWallUploadServer(groupID int) (*photoWallUploadS
 	}
 	params := url.Values{}
 	params.Set("group_id", gidStr)
-	resp, err := client.makeRequest("photos.getWallUploadServer", params)
+	resp, err := client.MakeRequest("photos.getWallUploadServer", params)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (client *VKClient) UploadGroupWallPhotos(groupID int, files []string) ([]*P
 	params.Set("server", strconv.Itoa(uploadData.Server))
 	params.Set("hash", uploadData.Hash)
 
-	resp, err := client.makeRequest("photos.saveWallPhoto", params)
+	resp, err := client.MakeRequest("photos.saveWallPhoto", params)
 	if err != nil {
 		return nil, err
 	}
