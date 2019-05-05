@@ -200,7 +200,7 @@ func (client *VKClient) MessagesGetByID(message_ids []int, params url.Values) (i
 	return message.Count, message.Messages, nil
 }
 
-func (client *VKClient) MessagesSend(user interface{}, message string, params url.Values) error {
+func (client *VKClient) MessagesSend(user interface{}, message string, params url.Values) (APIResponse, error) {
 	if params == nil {
 		params = url.Values{}
 	}
@@ -213,12 +213,12 @@ func (client *VKClient) MessagesSend(user interface{}, message string, params ur
 		params.Add("domain", user.(string))
 	}
 
-	_, err := client.makeRequest("messages.send", params)
+	resp, err := client.makeRequest("messages.send", params)
 	if err != nil {
-		return err
+		return resp, err
 	}
 
-	return nil
+	return resp, nil
 }
 
 func (client *VKClient) MessagesDelete(ids []int, spam int, deleteForAll int) (int, error) {

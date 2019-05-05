@@ -231,7 +231,7 @@ func (client *VKClient) makeRequest(method string, params url.Values) (APIRespon
 	json.Unmarshal(body, &apiresp)
 
 	if apiresp.ResponseError.ErrorCode != 0 {
-		return APIResponse{}, errors.New("Error code: " + strconv.Itoa(apiresp.ResponseError.ErrorCode) + ", " + apiresp.ResponseError.ErrorMsg)
+		return apiresp, errors.New("Error code: " + strconv.Itoa(apiresp.ResponseError.ErrorCode) + ", " + apiresp.ResponseError.ErrorMsg)
 	}
 	return apiresp, nil
 }
