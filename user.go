@@ -70,7 +70,7 @@ func (client *VKClient) UsersGet(users []int) ([]*User, error) {
 	v.Add("user_ids", idsString)
 	v.Add("fields", userFields)
 
-	resp, err := client.makeRequest("users.get", v)
+	resp, err := client.MakeRequest("users.get", v)
 	if err != nil {
 		return nil, err
 	}

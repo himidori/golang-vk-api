@@ -43,7 +43,7 @@ func (client *VKClient) LikesGet(itemType string, ownerID int, itemID int, count
 	params.Add("item_id", strconv.Itoa(itemID))
 	params.Add("extended", "1")
 
-	resp, err := client.makeRequest("likes.getList", params)
+	resp, err := client.MakeRequest("likes.getList", params)
 	if err != nil {
 		return 0, nil, err
 	}

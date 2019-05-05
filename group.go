@@ -54,7 +54,7 @@ func (client *VKClient) GroupSendInvite(groupID int, userID int) error {
 	params := url.Values{}
 	params.Set("group_id", strconv.Itoa(groupID))
 	params.Set("user_id", strconv.Itoa(userID))
-	_, err := client.makeRequest("groups.invite", params)
+	_, err := client.MakeRequest("groups.invite", params)
 	if err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (client *VKClient) GroupSearch(query string, count int) (int, []*Group, err
 	params.Set("q", query)
 	params.Set("count", strconv.Itoa(count))
 	params.Set("fields", groupFields)
-	resp, err := client.makeRequest("groups.search", params)
+	resp, err := client.MakeRequest("groups.search", params)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -82,7 +82,7 @@ func (client *VKClient) GroupGet(userID int, count int) (int, []*Group, error) {
 	params.Set("user_id", strconv.Itoa(userID))
 	params.Set("count", strconv.Itoa(count))
 	params.Set("extended", "1")
-	resp, err := client.makeRequest("groups.get", params)
+	resp, err := client.MakeRequest("groups.get", params)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -97,7 +97,7 @@ func (client *VKClient) GroupGetMembers(group_id int, count int) (int, []*User, 
 	params.Set("group_id", strconv.Itoa(group_id))
 	params.Set("count", strconv.Itoa(count))
 	params.Set("fields", userFields)
-	resp, err := client.makeRequest("groups.getMembers", params)
+	resp, err := client.MakeRequest("groups.getMembers", params)
 	if err != nil {
 		return 0, nil, err
 	}

@@ -74,7 +74,7 @@ func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (*
 		params.Set("domain", id.(string))
 	}
 
-	resp, err := client.makeRequest("wall.get", params)
+	resp, err := client.MakeRequest("wall.get", params)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (client *VKClient) WallGetByID(id string, params url.Values) (*Wall, error)
 
 	params.Set("posts", id)
 
-	resp, err := client.makeRequest("wall.getById", params)
+	resp, err := client.MakeRequest("wall.getById", params)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (client *VKClient) WallPost(ownerID int, message string, params url.Values)
 	params.Set("owner_id", strconv.Itoa(ownerID))
 	params.Set("message", message)
 
-	resp, err := client.makeRequest("wall.post", params)
+	resp, err := client.MakeRequest("wall.post", params)
 	if err != nil {
 		return 0, err
 	}
@@ -134,7 +134,7 @@ func (client *VKClient) WallPostComment(ownerID int, postID int, message string,
 	params.Set("post_id", strconv.Itoa(postID))
 	params.Set("message", message)
 
-	resp, err := client.makeRequest("wall.createComment", params)
+	resp, err := client.MakeRequest("wall.createComment", params)
 	if err != nil {
 		return 0, err
 	}

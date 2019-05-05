@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+const (
+	ActivityTypeTyping   = "typing"
+	ActivityTypeAudioMsg = "audiomessage"
+)
+
 type Dialog struct {
 	Count    int     `json:"count"`
 	Messages []*Item `json:"items"`
@@ -73,7 +78,7 @@ type StickerAttachment struct {
 	ProductID int    `json:"product_id"`
 	Photo64   string `json:"photo_64"`
 	Photo128  string `json:"photo_128"`
-	Photo256  string `json:'photo_256"`
+	Photo256  string `json:"photo_256"`
 	Photo352  string `json:"photo_352"`
 	Photo512  string `json:"photo_512"`
 	Width     int    `json:"width"`
@@ -136,7 +141,7 @@ func (client *VKClient) DialogsGet(count int, params url.Values) (*Dialog, error
 	}
 	params.Add("count", strconv.Itoa(count))
 
-	resp, err := client.makeRequest("messages.getDialogs", params)
+	resp, err := client.MakeRequest("messages.getDialogs", params)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +160,7 @@ func (client *VKClient) GetHistoryAttachments(peerID int, mediaType string, coun
 	params.Add("media_type", mediaType)
 	params.Add("peer_id", strconv.Itoa(peerID))
 
-	resp, err := client.makeRequest("messages.getHistoryAttachments", params)
+	resp, err := client.MakeRequest("messages.getHistoryAttachments", params)
 	if err != nil {
 		return nil, err
 	}
@@ -171,7 +176,7 @@ func (client *VKClient) MessagesGet(count int, params url.Values) (int, []*Dialo
 	}
 	params.Add("count", strconv.Itoa(count))
 
-	resp, err := client.makeRequest("messages.get", params)
+	resp, err := client.MakeRequest("messages.get", params)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -189,7 +194,7 @@ func (client *VKClient) MessagesGetByID(message_ids []int, params url.Values) (i
 	s := ArrayToStr(message_ids)
 	params.Add("message_ids", s)
 
-	resp, err := client.makeRequest("messages.getById", params)
+	resp, err := client.MakeRequest("messages.getById", params)
 	if err != nil {
 		return 0, nil, err
 	}
@@ -213,7 +218,7 @@ func (client *VKClient) MessagesSend(user interface{}, message string, params ur
 		params.Add("domain", user.(string))
 	}
 
-	resp, err := client.makeRequest("messages.send", params)
+	resp, err := client.MakeRequest("messages.send", params)
 	if err != nil {
 		return resp, err
 	}
@@ -228,7 +233,7 @@ func (client *VKClient) MessagesDelete(ids []int, spam int, deleteForAll int) (i
 	params.Add("spam", strconv.Itoa(spam))
 	params.Add("delete_for_all", strconv.Itoa(deleteForAll))
 
-	resp, err := client.makeRequest("messages.delete", params)
+	resp, err := client.MakeRequest("messages.delete", params)
 	if err != nil {
 		return 0, err
 	}
@@ -248,4 +253,19 @@ func (client *VKClient) MessagesDelete(ids []int, spam int, deleteForAll int) (i
 	}
 
 	return delCount, nil
+}
+
+func (client *VKClient) MessagesSetActivity(user int, params url.Values) error {
+	if params == nil {
+		params = url.Values{}
+	}
+
+	params.Add("user_id", strconv.Itoa(user))
+
+	_, err := client.MakeRequest("messages.setActivity", params)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

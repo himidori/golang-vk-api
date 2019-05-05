@@ -18,7 +18,7 @@ func (client *VKClient) ResolveScreenName(name string) (ResolveScreenName, error
 	params := url.Values{}
 	params.Set("screen_name", name)
 
-	resp, err := client.makeRequest("utils.resolveScreenName", params)
+	resp, err := client.MakeRequest("utils.resolveScreenName", params)
 	if err == nil {
 		json.Unmarshal(resp.Response, &res)
 	}

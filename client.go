@@ -178,7 +178,7 @@ func (client *VKClient) auth(device int, user string, password string) (Token, e
 }
 
 func (client *VKClient) requestSelfID() (uid int, err error) {
-	resp, err := client.makeRequest("users.get", url.Values{})
+	resp, err := client.MakeRequest("users.get", url.Values{})
 	if err != nil {
 		return 0, err
 	}
@@ -203,7 +203,7 @@ func (client *VKClient) requestSelfID() (uid int, err error) {
 	return data[0].ID, nil
 }
 
-func (client *VKClient) makeRequest(method string, params url.Values) (APIResponse, error) {
+func (client *VKClient) MakeRequest(method string, params url.Values) (APIResponse, error) {
 	client.rl.Wait()
 
 	endpoint := fmt.Sprintf(apiURL, method)
