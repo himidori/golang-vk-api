@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -36,3 +37,24 @@ func ArrayToStr(a []int) string {
 	}
 	return strings.Join(s, ",")
 }
+
+func GetFilesSizeMB(files []string) (int, error) {
+	var size int64
+
+	for _, f := range files {
+		file, err := os.Open(f)
+		if err != nil {
+			return 0, err
+		}
+		fi, err := file.Stat()
+		if err != nil {
+			return 0, err
+		}
+
+		size += fi.Size()
+		file.Close()
+	}
+
+	return int(size / 1048576), nil
+}
+

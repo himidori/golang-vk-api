@@ -25,7 +25,7 @@ type PhotoAttachment struct {
 	AccessKey string `json:"access_key"`
 }
 
-type photoWallUploadServer struct {
+type photoUploadServer struct {
 	UploadURL string `json:"upload_url"`
 	AlbumID   int    `json:"album_id"`
 	UserID    int    `json:"user_id"`
@@ -37,26 +37,20 @@ type photoWallUploadResult struct {
 	Photo  json.RawMessage `json:"photo"`
 }
 
-func (client *VKClient) photoGetWallUploadServer(groupID int) (*photoWallUploadServer, error) {
-	gidStr := strconv.Itoa(groupID)
-	if gidStr[0] == '-' {
-		gidStr = gidStr[1:]
-	}
-	params := url.Values{}
-	params.Set("group_id", gidStr)
-	resp, err := client.MakeRequest("photos.getWallUploadServer", params)
+func (client *VKClient) photoGetUploadServer(params url.Values, method string) (*photoUploadServer, error) {
+	resp, err := client.MakeRequest(method, params)
 	if err != nil {
 		return nil, err
 	}
 
-	data := new(photoWallUploadServer)
+	data := new(photoUploadServer)
 	json.Unmarshal(resp.Response, data)
 
 	return data, nil
 }
 
-func (client *VKClient) photoWallUpload(groupID int, files []string) (*photoWallUploadResult, error) {
-	serverInfo, err := client.photoGetWallUploadServer(groupID)
+func (client *VKClient) photoUpload(params url.Values, files []string, method string) (*photoWallUploadResult, error) {
+	serverInfo, err := client.photoGetUploadServer(params, method)
 	if err != nil {
 		return nil, err
 	}
@@ -85,19 +79,63 @@ func (client *VKClient) photoWallUpload(groupID int, files []string) (*photoWall
 	return uploadData, nil
 }
 
+func (client *VKClient) photoWallUpload(groupID string, files []string) (*photoWallUploadResult, error) {
+	params := url.Values{}
+	params.Set("group_id", groupID)
+
+	return client.photoUpload(params, files, "photos.getWallUploadServer")
+}
+
+func (client *VKClient) photoMessagesUpload(peerID string, files []string) (*photoWallUploadResult, error) {
+	params := url.Values{}
+	params.Set("peer_id", peerID)
+
+	return client.photoUpload(params, files, "photos.getMessagesUploadServer")
+}
+
 func (client *VKClient) UploadGroupWallPhotos(groupID int, files []string) ([]*PhotoAttachment, error) {
-	uploadData, err := client.photoWallUpload(groupID, files)
+	gidStr := strconv.Itoa(groupID)
+	if gidStr[0] == '-' {
+		gidStr = gidStr[1:]
+	}
+	uploadData, err := client.photoWallUpload(gidStr, files)
 	if err != nil {
 		return nil, err
 	}
 
 	params := url.Values{}
-	params.Set("group_id", strconv.Itoa(groupID))
+	params.Set("group_id", gidStr)
 	params.Set("photo", string(uploadData.Photo))
 	params.Set("server", strconv.Itoa(uploadData.Server))
 	params.Set("hash", uploadData.Hash)
 
 	resp, err := client.MakeRequest("photos.saveWallPhoto", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var photos []*PhotoAttachment
+	json.Unmarshal(resp.Response, &photos)
+
+	return photos, err
+}
+
+func (client *VKClient) UploadMessagesPhotos(peerID int, files []string) ([]*PhotoAttachment, error) {
+	pidStr := strconv.Itoa(peerID)
+	if pidStr[0] == '-' {
+		pidStr = pidStr[1:]
+	}
+	uploadData, err := client.photoMessagesUpload(pidStr, files)
+	if err != nil {
+		return nil, err
+	}
+
+	params := url.Values{}
+	params.Set("photo", string(uploadData.Photo))
+	params.Set("server", strconv.Itoa(uploadData.Server))
+	params.Set("hash", uploadData.Hash)
+
+	resp, err := client.MakeRequest("photos.saveMessagesPhoto", params)
 	if err != nil {
 		return nil, err
 	}
