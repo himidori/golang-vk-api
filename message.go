@@ -170,13 +170,18 @@ func (client *VKClient) GetHistoryAttachments(peerID int, mediaType string, coun
 	return att, nil
 }
 
-func (client *VKClient) MessagesGet(count int, params url.Values) (int, []*DialogMessage, error) {
+func (client *VKClient) MessagesGet(count int, chatID int, isDialog bool, params url.Values) (int, []*DialogMessage, error) {
 	if params == nil {
 		params = url.Values{}
 	}
+	if isDialog {
+		chatID += 2000000000
+	}
+
+	params.Add("user_id",strconv.Itoa(chatID))
 	params.Add("count", strconv.Itoa(count))
 
-	resp, err := client.MakeRequest("messages.get", params)
+	resp, err := client.MakeRequest("messages.getHistory", params)
 	if err != nil {
 		return 0, nil, err
 	}
