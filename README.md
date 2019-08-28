@@ -15,7 +15,7 @@ client, err := vkapi.NewVKClient(vkapi.DeviceIPhone, "username", "password")
 ## Authorizing using access token
 
 ```go
-client, err := vkapi.NewVKClientWithToken("token")
+client, err := vkapi.NewVKClientWithToken("token", nil)
 ```
 
 ## Listening longpoll events
