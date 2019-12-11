@@ -32,9 +32,9 @@ type photoUploadServer struct {
 }
 
 type photoWallUploadResult struct {
-	Server int             `json:"server"`
-	Hash   string          `json:"hash"`
-	Photo  json.RawMessage `json:"photo"`
+	Server int    `json:"server"`
+	Hash   string `json:"hash"`
+	Photo  string `json:"photo"`
 }
 
 func (client *VKClient) photoGetUploadServer(params url.Values, method string) (*photoUploadServer, error) {
@@ -71,10 +71,9 @@ func (client *VKClient) photoUpload(params url.Values, files []string, method st
 	}
 
 	uploadData := new(photoWallUploadResult)
-	json.Unmarshal(body, uploadData)
-	escaped := strings.Replace(string(uploadData.Photo), "\\", "", -1)
-	escaped = escaped[1 : len(escaped)-1]
-	uploadData.Photo = []byte(escaped)
+	if err := json.Unmarshal(body, uploadData); err != nil {
+		return nil, err
+	}
 
 	return uploadData, nil
 }
