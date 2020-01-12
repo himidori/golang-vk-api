@@ -14,7 +14,6 @@ import (
 const (
 	tokenURL = "https://oauth.vk.com/token"
 	apiURL   = "https://api.vk.com/method/%s"
-	apiVersion = "5.103"
 )
 
 const (
@@ -33,12 +32,6 @@ type VKClient struct {
 	Client *http.Client
 	rl     *ratelimiter
 	cb     *callbackHandler
-}
-
-type VKGroupBot struct {
-	VKClient
-	Group
-	cb *botsCallBackHandler
 }
 
 type TokenOptions struct {
@@ -90,29 +83,6 @@ func NewVKClientWithToken(token string, options *TokenOptions) (*VKClient, error
 	}
 
 	return vkclient, nil
-}
-
-func NewVKGroupBot(token string, options *TokenOptions) (*VKGroupBot, error) {
-	vkclient, err := NewVKClientWithToken(token, options)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := vkclient.MakeRequest("groups.getById", nil)
-	if err != nil {
-		return nil, err
-	}
-	
-	var res []*Group
-	json.Unmarshal(resp.Response, &res)
-	return &VKGroupBot{
-		VKClient: *vkclient,
-		Group: *res[0],
-		cb: &botsCallBackHandler{
-			events: make(map[string]func(*BotsLongPollObject)),
-		},
-
-	}, nil
 }
 
 func (client *VKClient) updateSelfUser() error {
@@ -242,7 +212,7 @@ func (client *VKClient) MakeRequest(method string, params url.Values) (APIRespon
 	}
 
 	params.Set("access_token", client.Self.AccessToken)
-	params.Set("v", apiVersion)
+	params.Set("v", "5.71")
 
 	resp, err := client.Client.PostForm(endpoint, params)
 	if err != nil {
