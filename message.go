@@ -178,7 +178,7 @@ func (client *VKClient) MessagesGet(count int, chatID int, isDialog bool, params
 		chatID += 2000000000
 	}
 
-	params.Add("user_id",strconv.Itoa(chatID))
+	params.Add("user_id", strconv.Itoa(chatID))
 	params.Add("count", strconv.Itoa(count))
 
 	resp, err := client.MakeRequest("messages.getHistory", params)
@@ -210,17 +210,17 @@ func (client *VKClient) MessagesGetByID(message_ids []int, params url.Values) (i
 	return message.Count, message.Messages, nil
 }
 
-func (client *VKClient) MessagesSend(user interface{}, message string, params url.Values) (APIResponse, error) {
+func (client *VKClient) MessagesSend(peerOrDomain interface{}, message string, params url.Values) (APIResponse, error) {
 	if params == nil {
 		params = url.Values{}
 	}
 	params.Add("message", message)
 
-	switch user.(type) {
+	switch peerOrDomain.(type) {
 	case int:
-		params.Add("user_id", strconv.Itoa(user.(int)))
+		params.Add("peer_id", strconv.Itoa(peerOrDomain.(int)))
 	case string:
-		params.Add("domain", user.(string))
+		params.Add("domain", peerOrDomain.(string))
 	}
 
 	resp, err := client.MakeRequest("messages.send", params)
