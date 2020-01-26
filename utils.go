@@ -38,6 +38,22 @@ func ArrayToStr(a []int) string {
 	return strings.Join(s, ",")
 }
 
+func BoolToInt(a bool) int {
+	if a {
+		return 1
+	}
+
+	return 0
+}
+
+func IntToBool(a int) bool {
+	if a > 0 {
+		return true
+	}
+
+	return false
+}
+
 func GetFilesSizeMB(files []string) (int, error) {
 	var size int64
 
@@ -57,4 +73,3 @@ func GetFilesSizeMB(files []string) (int, error) {
 
 	return int(size / 1048576), nil
 }
-
