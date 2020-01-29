@@ -31,13 +31,124 @@ type Topics struct {
 }
 
 type TopicComment struct {
+	ID          int           `json:"id"`
+	FromID      int           `json:"from_id"`
+	Date        int64         `json:"date"`
+	Text        string        `json:"text"`
+	ReplyToUID  int           `json:"reply_to_uid"`
+	ReplyToCID  int           `json:"reply_to_cid"`
+	Attachments []*Attachment `json:"attachments"`
+}
+
+type Attachment struct {
+	Type  string           `json:"type"`
+	Photo *AttachmentPhoto `json:"photo"`
+	Video *AttachmentVideo `json:"video"`
+	Audio *AttachmentAudio `json:"audio"`
+	Doc   *AttachmentDoc   `json:"doc"`
+}
+
+type AttachmentImageInfo struct {
+	Type        string `json:"type"`
+	Url         string `json:"url"`
+	Width       int    `json:"width"`
+	Height      int    `json:"height"`
+	WithPadding bool   `json:"with_padding"`
+}
+
+type AttachmentPhoto struct {
+	ID        int                    `json:"id"`
+	AlbumID   int                    `json:"album_id"`
+	OwnerID   int                    `json:"owner_id"`
+	UserID    int                    `json:"user_id"`
+	Sizes     []*AttachmentImageInfo `json:"sizes"`
+	Text      string                 `json:"text"`
+	Date      int64                  `json:"date"`
+	AccessKey string                 `json:"access_key"`
+	PostID    int                    `json:"post_id"`
+}
+
+type AttachmentVideo struct {
+	AccessKey     string                 `json:"access_key"`
+	CanComment    bool                   `json:"can_comment"`
+	CanEdit       bool                   `json:"can_edit"`
+	CanLike       bool                   `json:"can_like"`
+	CanRepost     bool                   `json:"can_repost"`
+	CanSubscribe  bool                   `json:"can_subscribe"`
+	CanAddToFaves bool                   `json:"can_add_to_faves"`
+	CanAdd        bool                   `json:"can_add"`
+	CanAttachLink bool                   `json:"can_attach_link"`
+	Comments      int                    `json:"comments"`
+	Date          int64                  `json:"date"`
+	Description   string                 `json:"description"`
+	Duration      int                    `json:"duration"`
+	Image         []*AttachmentImageInfo `json:"image"`
+	FirstFrame    []*AttachmentImageInfo `json:"first_frame"`
+	Width         int                    `json:"width"`
+	Height        int                    `json:"height"`
+	ID            int                    `json:"id"`
+	OwnerID       int                    `json:"owner_id"`
+	UserID        int                    `json:"user_id"`
+	Title         string                 `json:"title"`
+	IsFavorite    bool                   `json:"is_favorite"`
+	TrackCode     string                 `json:"track_code"`
+	Type          string                 `json:"type"`
+	Views         int                    `json:"views"`
+	LocalViews    int                    `json:"local_views"`
+	Platform      string                 `json:"platform"`
+}
+
+type AttachmentAudio struct {
+	Artist     string                   `json:"artist"`
+	ID         int                      `json:"id"`
+	OwnerID    int                      `json:"owner_id"`
+	Title      string                   `json:"title"`
+	Duration   int                      `json:"duration"`
+	AccessKey  string                   `json:"access_key"`
+	IsLicensed bool                     `json:"is_licensed"`
+	TrackCode  string                   `json:"track_code"`
+	Url        string                   `json:"url"`
+	Date       int64                    `json:"date"`
+	Album      *AttachmentAudioAlbum    `json:"album"`
+	MainArtist []*AttachmentAudioArtist `json:"main_artist"`
+}
+
+type AttachmentAudioAlbum struct {
+	ID        int                        `json:"id"`
+	Title     string                     `json:"title"`
+	OwnerID   int                        `json:"owner_id"`
+	AccessKey string                     `json:"access_key"`
+	Thumb     *AttachmentAudioAlbumThumb `json:"thumb"`
+}
+
+type AttachmentAudioAlbumThumb struct {
+	Width    int    `json:"width"`
+	Height   int    `json:"height"`
+	Photo34  string `json:"photo_34"`
+	Photo68  string `json:"photo_68"`
+	Photo135 string `json:"photo_135"`
+	Photo270 string `json:"photo_270"`
+	Photo300 string `json:"photo_300"`
+	Photo600 string `json:"photo_600"`
+}
+
+type AttachmentAudioArtist struct {
+	Name   string `json:"name"`
+	Domain string `json:"domain"`
+	ID     string `json:"id"`
+}
+
+type AttachmentDoc struct {
 	ID         int    `json:"id"`
-	FromID     int    `json:"from_id"`
+	OwnerID    int    `json:"owner_id"`
+	Title      string `json:"title"`
+	Size       int    `json:"size"`
+	Ext        string `json:"ext"`
+	Url        string `json:"url"`
 	Date       int64  `json:"date"`
-	Text       string `json:"text"`
-	ReplyToUID int    `json:"reply_to_uid"`
-	ReplyToCID int    `json:"reply_to_cid"`
-	// Attachments []*Attachments `json:"attachments"`
+	Type       int    `json:"type"`
+	IsLicensed bool   `json:"is_licensed"`
+	AccessKey  string `json:"access_key"`
 }
 
 type Poll struct {
