@@ -40,11 +40,38 @@ type TopicComment struct {
 	// Attachments []*Attachments `json:"attachments"`
 }
 
+type Poll struct {
+	ID        int           `json:"id"`
+	OwnerID   int           `json:"owner_id"`
+	Created   int64         `json:"created"`
+	Question  string        `json:"question"`
+	Votes     int           `json:"votes"`
+	Answers   []*PollAnswer `json:"answers"`
+	Anonymous bool          `json:"anonymous"`
+	Multiple  bool          `json:"multiple"`
+	AnswerIDS []int         `json:"answer_ids"`
+	EndDate   int64         `json:"end_date"`
+	Closed    bool          `json:"closed"`
+	IsBoard   bool          `json:"is_board"`
+	CanEdit   bool          `json:"can_edit"`
+	CanVote   bool          `json:"can_vote"`
+	CanReport bool          `json:"can_report"`
+	CanShare  bool          `json:"can_share"`
+}
+
+type PollAnswer struct {
+	ID    int     `json:"id"`
+	Text  string  `json:"text"`
+	Votes int     `json:"votes"`
+	Rate  float64 `json:"rate"`
+}
+
 type Comments struct {
-	Count    int             `json:"count"`
-	Comments []*TopicComment `json:"items"`
-	// Poll     *Poll           `json:"poll"`
-	Profiles []*User `json:"profiles"`
+	Count      int             `json:"count"`
+	Comments   []*TopicComment `json:"items"`
+	Poll       *Poll           `json:"poll"`
+	Profiles   []*User         `json:"profiles"`
+	RealOffset int             `json:"real_offset"`
 }
 
 func (client *VKClient) BoardAddTopic(groupID int, title string, text string, fromGroup bool, attachments []string) (int, error) {
@@ -225,7 +252,11 @@ func (client *VKClient) BoardGetComments(groupID int, topicID int, count int, pa
 	}
 
 	var comments *Comments
-	json.Unmarshal(resp.Response, &comments)
+	err = json.Unmarshal(resp.Response, &comments)
+	if err != nil {
+		return nil, err
+	}
+
 	return comments, nil
 }
 
@@ -242,7 +273,11 @@ func (client *VKClient) BoardGetTopics(groupID int, count int, params url.Values
 	}
 
 	var topics *Topics
-	json.Unmarshal(resp.Response, &topics)
+	err = json.Unmarshal(resp.Response, &topics)
+	if err != nil {
+		return nil, err
+	}
+
 	return topics, nil
 }
 
