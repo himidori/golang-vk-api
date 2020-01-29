@@ -25,7 +25,7 @@ type Topic struct {
 type Topics struct {
 	Count        int      `json:"count"`
 	Topics       []*Topic `json:"items"`
-	DefaultOrder int      `json:"default_order"`
+	DefaultOrder float64  `json:"default_order"`
 	CanAddTopics int      `json:"can_add_topics"`
 	Profiles     []*User  `json:"profiles"`
 }
@@ -53,7 +53,7 @@ type AttachmentImageInfo struct {
 	Url         string `json:"url"`
 	Width       int    `json:"width"`
 	Height      int    `json:"height"`
-	WithPadding bool   `json:"with_padding"`
+	WithPadding int    `json:"with_padding"`
 }
 
 type AttachmentPhoto struct {
@@ -70,14 +70,14 @@ type AttachmentPhoto struct {
 
 type AttachmentVideo struct {
 	AccessKey     string                 `json:"access_key"`
-	CanComment    bool                   `json:"can_comment"`
-	CanEdit       bool                   `json:"can_edit"`
-	CanLike       bool                   `json:"can_like"`
-	CanRepost     bool                   `json:"can_repost"`
-	CanSubscribe  bool                   `json:"can_subscribe"`
-	CanAddToFaves bool                   `json:"can_add_to_faves"`
-	CanAdd        bool                   `json:"can_add"`
-	CanAttachLink bool                   `json:"can_attach_link"`
+	CanComment    int                    `json:"can_comment"`
+	CanEdit       int                    `json:"can_edit"`
+	CanLike       int                    `json:"can_like"`
+	CanRepost     int                    `json:"can_repost"`
+	CanSubscribe  int                    `json:"can_subscribe"`
+	CanAddToFaves int                    `json:"can_add_to_faves"`
+	CanAdd        int                    `json:"can_add"`
+	CanAttachLink int                    `json:"can_attach_link"`
 	Comments      int                    `json:"comments"`
 	Date          int64                  `json:"date"`
 	Description   string                 `json:"description"`
@@ -90,7 +90,7 @@ type AttachmentVideo struct {
 	OwnerID       int                    `json:"owner_id"`
 	UserID        int                    `json:"user_id"`
 	Title         string                 `json:"title"`
-	IsFavorite    bool                   `json:"is_favorite"`
+	IsFavorite    int                    `json:"is_favorite"`
 	TrackCode     string                 `json:"track_code"`
 	Type          string                 `json:"type"`
 	Views         int                    `json:"views"`
@@ -147,7 +147,7 @@ type AttachmentDoc struct {
 	Url        string `json:"url"`
 	Date       int64  `json:"date"`
 	Type       int    `json:"type"`
-	IsLicensed bool   `json:"is_licensed"`
+	IsLicensed int    `json:"is_licensed"` // NOTE(Pedro): There is some inconsistency on VK API, this field can return "true" or zero for false
 	AccessKey  string `json:"access_key"`
 }
 
