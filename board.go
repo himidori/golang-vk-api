@@ -30,14 +30,21 @@ type Topics struct {
 	Profiles     []*User  `json:"profiles"`
 }
 
+type TopicCommentLike struct {
+	Count     int `json:"count"`
+	UserLikes int `json:"user_likes"`
+	CanLike   int `json:"can_like"`
+}
+
 type TopicComment struct {
-	ID          int           `json:"id"`
-	FromID      int           `json:"from_id"`
-	Date        int64         `json:"date"`
-	Text        string        `json:"text"`
-	ReplyToUID  int           `json:"reply_to_uid"`
-	ReplyToCID  int           `json:"reply_to_cid"`
-	Attachments []*Attachment `json:"attachments"`
+	ID          int               `json:"id"`
+	FromID      int               `json:"from_id"`
+	Date        int64             `json:"date"`
+	Text        string            `json:"text"`
+	Likes       *TopicCommentLike `json:"likes"`
+	ReplyToUID  int               `json:"reply_to_uid"`
+	ReplyToCID  int               `json:"reply_to_cid"`
+	Attachments []*Attachment     `json:"attachments"`
 }
 
 type Attachment struct {
