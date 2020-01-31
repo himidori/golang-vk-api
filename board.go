@@ -48,11 +48,12 @@ type TopicComment struct {
 }
 
 type Attachment struct {
-	Type  string           `json:"type"`
-	Photo *AttachmentPhoto `json:"photo"`
-	Video *AttachmentVideo `json:"video"`
-	Audio *AttachmentAudio `json:"audio"`
-	Doc   *AttachmentDoc   `json:"doc"`
+	Type    string             `json:"type"`
+	Photo   *AttachmentPhoto   `json:"photo"`
+	Video   *AttachmentVideo   `json:"video"`
+	Audio   *AttachmentAudio   `json:"audio"`
+	Doc     *AttachmentDoc     `json:"doc"`
+	Sticker *AttachmentSticker `json:"sticker"`
 }
 
 type AttachmentImageInfo struct {
@@ -156,6 +157,13 @@ type AttachmentDoc struct {
 	Type       int    `json:"type"`
 	IsLicensed int    `json:"is_licensed"` // NOTE(Pedro): There is some inconsistency on VK API, this field can return "true" or zero for false
 	AccessKey  string `json:"access_key"`
+}
+
+type AttachmentSticker struct {
+	ProductID            int                    `json:"product_id"`
+	StickerID            int                    `json:"sticker_id"`
+	Images               []*AttachmentImageInfo `json:"images"`
+	ImagesWithBackground []*AttachmentImageInfo `json:"images_with_background"`
 }
 
 type Poll struct {
