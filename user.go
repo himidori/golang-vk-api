@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-//last seen device
+// last seen device
 const (
 	_ = iota
 	PlatformMobile
@@ -37,8 +37,11 @@ type User struct {
 	Photo                   string       `json:"photo"`
 	PhotoMedium             string       `json:"photo_medium"`
 	PhotoBig                string       `json:"photo_big"`
+	Photo50                 string       `json:"photo_50"`
+	Photo100                string       `json:"photo_100"`
 	HasMobile               int          `json:"has_mobile"`
 	Online                  int          `json:"online"`
+	OnlineInfo              *OnlineInfo  `json:"online_info"`
 	CanPost                 int          `json:"can_post"`
 	CanSeeAllPosts          int          `json:"can_see_all_posts"`
 	CanWritePrivateMessages int          `json:"can_write_private_message"`
@@ -62,6 +65,11 @@ type UserCountry struct {
 type LastSeen struct {
 	Time     int64 `json:"time"`
 	Platform int   `json:"platform"`
+}
+
+type OnlineInfo struct {
+	Visible  bool  `json:"visible"`
+	LastSeen int64 `json:"last_seen"`
 }
 
 func (client *VKClient) UsersGet(users []int) ([]*User, error) {

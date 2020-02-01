@@ -266,23 +266,19 @@ func TestVKClient_BoardGetComments(t *testing.T) {
 }
 
 func TestVKClient_BoardGetTopics(t *testing.T) {
-	topics, err := client.BoardGetTopics(testCommunity, 55, nil)
+	topics, err := client.BoardGetTopics(testCommunity, 3, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if len(topics.Topics) != 55 {
-		t.Fatal("got wrong number of topics")
+	if len(topics.Topics) != 3 {
+		t.Fatalf("got wrong number of topics, got %d", len(topics.Topics))
 	}
 
-	fmt.Println(topics.Topics[0].Title)
-
-	comments, err := client.BoardGetComments(testCommunity, topics.Topics[0].ID, 100, nil)
+	_, err = client.BoardGetComments(testCommunity, topics.Topics[0].ID, 100, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	fmt.Println(comments.Comments[0].Text)
 }
 
 func TestVKClient_BoardOpenTopic(t *testing.T) {
