@@ -92,9 +92,9 @@ func (client *VKClient) GroupGet(userID int, count int) (int, []*Group, error) {
 	return res.Count, res.Groups, nil
 }
 
-func (client *VKClient) GroupsGetByID(groipID []int) ([]*Group, error) {
+func (client *VKClient) GroupsGetByID(groupsID []int) ([]*Group, error) {
 	params := url.Values{}
-	params.Set("group_ids", ArrayToStr(groipID))
+	params.Set("group_ids", ArrayToStr(groupsID))
 	resp, err := client.MakeRequest("groups.getById", params)
 	if err != nil {
 		return nil, err
