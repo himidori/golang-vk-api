@@ -66,7 +66,7 @@ type Video struct {
 
 type Videos struct {
 	Count    int      `json:"count"`
-	Posts    []*Video `json:"items"`
+	Videos   []*Video `json:"items"`
 	Profiles []*User  `json:"profiles"`
 	Groups   []*Group `json:"groups"`
 }
