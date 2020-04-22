@@ -105,29 +105,6 @@ type AudioAttachment struct {
 	Performer string `json:"performer"`
 }
 
-type VideoAttachment struct {
-	ID            int    `json:"id"`
-	OwnerID       int    `json:"owner_id"`
-	Title         string `json:"title"`
-	Duration      int    `json:"duration"`
-	Description   string `json:"description"`
-	Date          int64  `json:"date"`
-	AddingDate    int64  `json:"adding_date"`
-	Views         int    `json:"views"`
-	Width         int    `json:"width"`
-	Height        int    `json:"height"`
-	Photo130      string `json:"photo130"`
-	Photo320      string `json:"photo320"`
-	Photo800      string `json:"photo800"`
-	FirstFrame320 string `json:"first_frame_320"`
-	FirstFrame160 string `json:"first_frame_160"`
-	FirstFrame130 string `json:"first_frame_130"`
-	FirstFrame800 string `json:"first_frame_800"`
-	Player        string `json:"player"`
-	CanEdit       int    `json:"can_edit"`
-	CanAdd        int    `json:"can_add"`
-}
-
 type LinkAttachment struct {
 	URL         string `json:"url"`
 	Title       string `json:"title"`
