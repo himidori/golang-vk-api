@@ -135,6 +135,17 @@ type LinkAttachment struct {
 	Target      string `json:"target"`
 }
 
+type Keyboard struct {
+	OneTime 	bool		`json:"one_time"`
+	Buttons		[][]Button 	`json:"buttons"`
+	Inline		bool 		`json:"inline"`
+}
+
+type Button struct {
+	Action		map[string]string	`json:"action"`
+	Color		string				`json:"color"`
+}
+
 func (client *VKClient) DialogsGet(count int, params url.Values) (*Dialog, error) {
 	if params == nil {
 		params = url.Values{}
