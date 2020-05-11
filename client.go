@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	tokenURL = "https://oauth.vk.com/token"
-	apiURL   = "https://api.vk.com/method/%s"
+	tokenURL   = "https://oauth.vk.com/token"
+	apiURL     = "https://api.vk.com/method/%s"
 	apiVersion = "5.103"
 )
 
@@ -44,6 +44,7 @@ type VKGroupBot struct {
 type TokenOptions struct {
 	ServiceToken    bool
 	ValidateOnStart bool
+	TokenLanguage   string
 }
 
 func newVKClientBlank() *VKClient {
@@ -72,6 +73,7 @@ func NewVKClient(device int, user string, password string) (*VKClient, error) {
 func NewVKClientWithToken(token string, options *TokenOptions) (*VKClient, error) {
 	vkclient := newVKClientBlank()
 	vkclient.Self.AccessToken = token
+	vkclient.Self.Lang = options.TokenLanguage
 
 	if options != nil {
 		if options.ValidateOnStart {
@@ -102,16 +104,15 @@ func NewVKGroupBot(token string, options *TokenOptions) (*VKGroupBot, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var res []*Group
 	json.Unmarshal(resp.Response, &res)
 	return &VKGroupBot{
 		VKClient: *vkclient,
-		Group: *res[0],
+		Group:    *res[0],
 		cb: &botsCallBackHandler{
 			events: make(map[string]func(*BotsLongPollObject)),
 		},
-
 	}, nil
 }
 
@@ -243,6 +244,9 @@ func (client *VKClient) MakeRequest(method string, params url.Values) (APIRespon
 
 	params.Set("access_token", client.Self.AccessToken)
 	params.Set("v", apiVersion)
+	if client.Self.Lang != "" {
+		params.Set("lang", client.Self.Lang)
+	}
 
 	resp, err := client.Client.PostForm(endpoint, params)
 	if err != nil {

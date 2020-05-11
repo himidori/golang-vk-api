@@ -25,4 +25,5 @@ type Token struct {
 	PicSmall         string
 	PicMedium        string
 	PicBig           string
+	Lang             string
 }
