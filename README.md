@@ -44,6 +44,7 @@ client.AddLongpollCallback("msgread", func(m *vkapi.LongPollMessage) {
 // listening users online
 client.AddLongpollCallback("msgonline", func(m *vkapi.LongPollMessage) {
 	fmt.Printf("user %d is now online\n", m.UserID)
+})
 
 // starting 
 client.ListenLongPollServer()
