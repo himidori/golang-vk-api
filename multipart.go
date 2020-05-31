@@ -58,6 +58,37 @@ func (client *VKClient) getPhotoMultipartReq(link string, files []string) (*http
 
 }
 
+func (client *VKClient) getPhotoByLinkMultipartReq(link string, urlFile string) (*http.Request, error) {
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	respGetFile, err := http.Get(urlFile)
+	if err != nil {
+		return nil, err
+	}
+	defer respGetFile.Body.Close()
+
+	part, err := writer.CreateFormFile("file", "file.png")
+	if err != nil {
+		return nil, err
+	}
+	io.Copy(part, respGetFile.Body)
+
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", link, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	return req, nil
+}
+
 func (client *VKClient) getDocMultipartReq(link string, fileName string) (*http.Request, error) {
 	size, err := GetFilesSizeMB([]string{fileName})
 	if err != nil {

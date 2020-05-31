@@ -86,11 +86,47 @@ func (client *VKClient) photoUpload(params url.Values, files []string, method st
 	return uploadData, nil
 }
 
+func (client *VKClient) photoUploadByLink(params url.Values, urlFile string, method string) (*photoWallUploadResult, error) {
+	serverInfo, err := client.photoGetUploadServer(params, method)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := client.getPhotoByLinkMultipartReq(serverInfo.UploadURL, urlFile)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	uploadData := new(photoWallUploadResult)
+	if err := json.Unmarshal(body, uploadData); err != nil {
+		return nil, err
+	}
+
+	return uploadData, nil
+}
+
 func (client *VKClient) photoWallUpload(groupID string, files []string) (*photoWallUploadResult, error) {
 	params := url.Values{}
 	params.Set("group_id", groupID)
 
 	return client.photoUpload(params, files, "photos.getWallUploadServer")
+}
+
+func (client *VKClient) photoByLinkWallUpload(groupID string, urlFile string) (*photoWallUploadResult, error) {
+	params := url.Values{}
+	params.Set("group_id", groupID)
+
+	return client.photoUploadByLink(params, urlFile, "photos.getWallUploadServer")
 }
 
 func (client *VKClient) photoMessagesUpload(peerID string, files []string) (*photoWallUploadResult, error) {
@@ -106,6 +142,32 @@ func (client *VKClient) UploadGroupWallPhotos(groupID int, files []string) ([]*P
 		gidStr = gidStr[1:]
 	}
 	uploadData, err := client.photoWallUpload(gidStr, files)
+	if err != nil {
+		return nil, err
+	}
+
+	params := url.Values{}
+	params.Set("group_id", gidStr)
+	params.Set("photo", string(uploadData.Photo))
+	params.Set("server", strconv.Itoa(uploadData.Server))
+	params.Set("hash", uploadData.Hash)
+
+	resp, err := client.MakeRequest("photos.saveWallPhoto", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var photos []*PhotoAttachment
+	json.Unmarshal(resp.Response, &photos)
+
+	return photos, err
+}
+func (client *VKClient) UploadByLinkGroupWallPhotos(groupID int, urlFile string) ([]*PhotoAttachment, error) {
+	gidStr := strconv.Itoa(groupID)
+	if gidStr[0] == '-' {
+		gidStr = gidStr[1:]
+	}
+	uploadData, err := client.photoByLinkWallUpload(gidStr, urlFile)
 	if err != nil {
 		return nil, err
 	}
