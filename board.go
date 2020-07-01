@@ -98,7 +98,7 @@ type AttachmentVideo struct {
 	OwnerID       int                    `json:"owner_id"`
 	UserID        int                    `json:"user_id"`
 	Title         string                 `json:"title"`
-	IsFavorite    int                    `json:"is_favorite"`
+	IsFavorite    bool                   `json:"is_favorite"`
 	TrackCode     string                 `json:"track_code"`
 	Type          string                 `json:"type"`
 	Views         int                    `json:"views"`
