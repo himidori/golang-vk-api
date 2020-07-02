@@ -3,7 +3,7 @@ package main
 import (
 	"net/url"
 
-	vkapi "github.com/leidruid/golang-vk-api"
+	vkapi "github.com/himidori/golang-vk-api"
 )
 
 /*
