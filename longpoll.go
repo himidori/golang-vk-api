@@ -58,17 +58,17 @@ type BotsLongPollObject struct {
 }
 
 type BotlLongPollDM struct {
-	MessageID    int                    `json:"id"`
-	Date         int64                  `json:"date"`
-	PeerID       int64                  `json:"peer_id"`
-	SendByID     int64                  `json:"from_id"`
-	Text         string                 `json:"text"`
-	RandomID     int64                  `json:"random_id"`
-	Attachments  []MessageAttachment    `json:"attachments"`
-	Isimportant  bool                   `json:"important"`
-	FwdMessages  []BotlLongPollDM       `json:"fwd_messages"`
-	ReplyMessage *BotlLongPollDM        `json:"reply_message"`
-	Payload      map[string]interface{} `json:"payload"`
+	MessageID    int                 `json:"id"`
+	Date         int64               `json:"date"`
+	PeerID       int64               `json:"peer_id"`
+	SendByID     int64               `json:"from_id"`
+	Text         string              `json:"text"`
+	RandomID     int64               `json:"random_id"`
+	Attachments  []MessageAttachment `json:"attachments"`
+	Isimportant  bool                `json:"important"`
+	FwdMessages  []BotlLongPollDM    `json:"fwd_messages"`
+	ReplyMessage *BotlLongPollDM     `json:"reply_message"`
+	Payload      string              `json:"payload"`
 }
 
 func (client *VKClient) getLongPollServer() (LongPollServer, error) {
