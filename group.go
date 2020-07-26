@@ -23,6 +23,7 @@ type Group struct {
 	Type              string          `json:"type"`
 	IsAdmin           int             `json:"is_admin"`
 	IsMember          int             `json:"is_member"`
+	MembersCount      int             `json:"members_count"`
 	HasPhoto          int             `json:"has_photo"`
 	IsMessagesBlocked int             `json:"is_messages_blocked"`
 	Photo50           string          `json:"photo_50"`
@@ -95,6 +96,8 @@ func (client *VKClient) GroupGet(userID int, count int) (int, []*Group, error) {
 func (client *VKClient) GroupsGetByID(groupsID []int) ([]*Group, error) {
 	params := url.Values{}
 	params.Set("group_ids", ArrayToStr(groupsID))
+	params.Set("fields", "members_count")
+
 	resp, err := client.MakeRequest("groups.getById", params)
 	if err != nil {
 		return nil, err
@@ -106,10 +109,11 @@ func (client *VKClient) GroupsGetByID(groupsID []int) ([]*Group, error) {
 	return groupsList, nil
 }
 
-func (client *VKClient) GroupGetMembers(group_id int, count int) (int, []*User, error) {
+func (client *VKClient) GroupGetMembers(group_id, count, offset int) (int, []*User, error) {
 	params := url.Values{}
 	params.Set("group_id", strconv.Itoa(group_id))
 	params.Set("count", strconv.Itoa(count))
+	params.Set("offset", strconv.Itoa(offset))
 	params.Set("fields", userFields)
 	resp, err := client.MakeRequest("groups.getMembers", params)
 	if err != nil {
