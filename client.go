@@ -90,22 +90,25 @@ func NewVKClient(device int, user string, password string, limitrate bool) (*VKC
 func NewVKClientWithToken(token string, options *TokenOptions, limitrate bool) (*VKClient, error) {
 	vkclient := newVKClientBlank(limitrate)
 	vkclient.Self.AccessToken = token
+	if options == nil {
+		return vkclient, nil
+	}
+
 	vkclient.Self.Lang = options.TokenLanguage
 
-	if options != nil {
-		if options.ValidateOnStart {
-			uid, err := vkclient.requestSelfID()
-			if err != nil {
+	if options.ValidateOnStart {
+		uid, err := vkclient.requestSelfID()
+		if err != nil {
+			return nil, err
+		}
+		vkclient.Self.UID = uid
+
+		if !options.ServiceToken {
+			if err := vkclient.updateSelfUser(); err != nil {
 				return nil, err
 			}
-			vkclient.Self.UID = uid
-
-			if !options.ServiceToken {
-				if err := vkclient.updateSelfUser(); err != nil {
-					return nil, err
-				}
-			}
 		}
+
 	}
 
 	return vkclient, nil
