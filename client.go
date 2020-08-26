@@ -112,7 +112,7 @@ func NewVKClientWithToken(token string, options *TokenOptions, limitrate bool) (
 		}
 	}
 
-	if options.RequestsPerSecond > 0 {
+	if options.RequestsPerSecond > 0 && limitrate {
 		vkclient.rl.MaxRequestsPerSecond = options.RequestsPerSecond
 	}
 
