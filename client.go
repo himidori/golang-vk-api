@@ -26,9 +26,10 @@ const (
 )
 
 type ratelimiter struct {
-	requestsCount   int
-	lastRequestTime time.Time
-	mux             sync.Mutex
+	MaxRequestsPerSecond int
+	requestsCount        int
+	lastRequestTime      time.Time
+	mux                  sync.Mutex
 }
 
 type VKClient struct {
@@ -45,9 +46,10 @@ type VKGroupBot struct {
 }
 
 type TokenOptions struct {
-	ServiceToken    bool
-	ValidateOnStart bool
-	TokenLanguage   string
+	ServiceToken      bool
+	ValidateOnStart   bool
+	TokenLanguage     string
+	RequestsPerSecond int
 }
 
 func newVKClientBlank(limitrate bool) *VKClient {
@@ -108,7 +110,10 @@ func NewVKClientWithToken(token string, options *TokenOptions, limitrate bool) (
 				return nil, err
 			}
 		}
+	}
 
+	if options.RequestsPerSecond > 0 {
+		vkclient.rl.MaxRequestsPerSecond = options.RequestsPerSecond
 	}
 
 	return vkclient, nil
@@ -158,7 +163,7 @@ func (s *ratelimiter) Wait() {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
-	if s.requestsCount == 3 {
+	if s.requestsCount >= s.MaxRequestsPerSecond {
 		secs := time.Since(s.lastRequestTime).Seconds()
 		ms := int((1 - secs) * 1000)
 		if ms > 0 {
