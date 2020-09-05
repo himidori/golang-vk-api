@@ -9,13 +9,13 @@ go get github.com/himidori/golang-vk-api
 ## Authorizing using username and password
 
 ```go
-client, err := vkapi.NewVKClient(vkapi.DeviceIPhone, "username", "password")
+client, err := vkapi.NewVKClient(vkapi.DeviceIPhone, "username", "password", true)
 ```
 
 ## Authorizing using access token
 
 ```go
-client, err := vkapi.NewVKClientWithToken("token", nil)
+client, err := vkapi.NewVKClientWithToken("token", nil, true)
 ```
 
 ## Listening longpoll events
