@@ -14,6 +14,13 @@ type ResolveScreenName struct {
 	ObjectID int    `json:"object_id"`
 }
 
+type ShortLink struct {
+	ShortUrl  string `json:"short_url"`
+	Accesskey string `json:"access_key"`
+	Key       string `json:"key"`
+	Url       string `json:"url"`
+}
+
 func (client *VKClient) ResolveScreenName(name string) (ResolveScreenName, error) {
 	var res ResolveScreenName
 	params := url.Values{}
@@ -28,6 +35,23 @@ func (client *VKClient) ResolveScreenName(name string) (ResolveScreenName, error
 	}
 	return res, err
 
+}
+
+func (client *VKClient) GetShortLink(toUrl string, private int) (*ShortLink, error) {
+	params := url.Values{}
+
+	params.Set("url", toUrl)
+	params.Set("private", strconv.Itoa(private))
+
+	resp, err := client.MakeRequest("utils.getShortLink", params)
+	if err != nil {
+		return nil, err
+	}
+
+	var shortLink *ShortLink
+	json.Unmarshal(resp.Response, &shortLink)
+
+	return shortLink, nil
 }
 
 func ArrayToStr(a []int) string {
