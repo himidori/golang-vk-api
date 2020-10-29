@@ -305,3 +305,11 @@ func (client *VKClient) MakeRequest(method string, params url.Values) (APIRespon
 	}
 	return apiresp, nil
 }
+
+func (c *VKClient) SetCustomHTTPClient(client *http.Client) {
+	c.Client = client
+}
+
+func (c *VKGroupBot) SetCustomHTTPClient(client *http.Client) {
+	c.Client = clint
+}
