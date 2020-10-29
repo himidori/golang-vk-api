@@ -311,5 +311,5 @@ func (c *VKClient) SetCustomHTTPClient(client *http.Client) {
 }
 
 func (c *VKGroupBot) SetCustomHTTPClient(client *http.Client) {
-	c.Client = clint
+	c.Client = client
 }
