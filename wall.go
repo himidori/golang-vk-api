@@ -2,6 +2,7 @@ package vkapi
 
 import (
 	"encoding/json"
+	"errors"
 	"net/url"
 	"strconv"
 )
@@ -73,6 +74,8 @@ func (client *VKClient) WallGet(id interface{}, count int, params url.Values) (*
 		params.Set("owner_id", strconv.Itoa(id.(int)))
 	case string:
 		params.Set("domain", id.(string))
+	default:
+		return nil, errors.New("unexpected type in id filed")
 	}
 
 	resp, err := client.MakeRequest("wall.get", params)
