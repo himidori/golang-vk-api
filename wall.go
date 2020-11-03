@@ -38,6 +38,7 @@ type WallPost struct {
 	Reposts      *Repost              `json:"reposts"`
 	Online       int                  `json:"online"`
 	ReplyCount   int                  `json:"reply_count"`
+	SignerID     int                  `json:"signer_id"`
 }
 
 type Comment struct {
