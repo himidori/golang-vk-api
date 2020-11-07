@@ -54,7 +54,7 @@ type BotsLongPollEvent struct {
 
 type BotsLongPollObject struct {
 	Message    BotlLongPollDM `json:"message"`
-	ClientInfo interface{}    `json:"client_info`
+	ClientInfo interface{}    `json:"client_info"`
 }
 
 type BotlLongPollDM struct {
