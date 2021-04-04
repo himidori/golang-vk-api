@@ -53,8 +53,14 @@ type BotsLongPollEvent struct {
 }
 
 type BotsLongPollObject struct {
-	Message    BotlLongPollDM `json:"message"`
-	ClientInfo interface{}    `json:"client_info"`
+	// message_*
+	Message    BotlLongPollDM 			`json:"message"`
+	ClientInfo interface{}    			`json:"client_info"`
+	// group_join
+	UserId	   int64					`json:"user_id"`
+	JoinType   string					`json:"join_type"`
+	// wall_post_new
+	WallPost
 }
 
 type BotlLongPollDM struct {
@@ -273,10 +279,10 @@ func (client *VKGroupBot) ListenBotsLongPollServerWithCancel(cancelCtx context.C
 		case 0:
 			for _, update := range updates.Updates {
 				switch update.Type {
-				case "message_new", "message_reply", "message_edit":
+				case "message_new", "message_reply", "message_edit", "group_join", "wall_post_new":
 					client.handleBotsCallback(update.Type, &update.Object)
 				default:
-					log.Printf("botsLongpoll update with non 'message' type: %s", update.Type)
+					log.Printf("botsLongpoll update with unknown type: %s", update.Type)
 				}
 			}
 			server.TS = updates.TS

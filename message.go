@@ -120,7 +120,7 @@ type Keyboard struct {
 
 type Button struct {
 	Action		map[string]string	`json:"action"`
-	Color		string				`json:"color"`
+	Color		string				`json:"color,omitempty"`
 }
 
 func (client *VKClient) DialogsGet(count int, params url.Values) (*Dialog, error) {
