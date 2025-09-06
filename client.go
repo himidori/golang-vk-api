@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	tokenURL   = "https://oauth.vk.com/token"
-	apiURL     = "https://api.vk.com/method/%s"
+	tokenURL   = "https://oauth.vk.ru/token"
+	apiURL     = "https://api.vk.ru/method/%s"
 	apiVersion = "5.103"
 )
 
